@@ -44,7 +44,7 @@ export default function CreatePost({ user, onPostCreated }) {
             className={styles.createPostInput}
             onClick={() => setShowPostForm(true)}
           >
-            What's on your mind?
+            What&apos;s on your mind?
           </button>
         </div>
         <div className={styles.createPostActions}>
@@ -84,7 +84,7 @@ export default function CreatePost({ user, onPostCreated }) {
             </div>
             <form onSubmit={handlePost}>
               <textarea
-                placeholder="What's on your mind?"
+                placeholder="What&apos;s on your mind?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className={styles.postTextarea}
