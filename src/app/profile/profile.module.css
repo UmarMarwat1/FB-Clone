@@ -1,0 +1,372 @@
+.profileCard {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 2rem 2.5rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatarWrap {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #eee;
+}
+
+.avatarPlaceholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.profileForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formLabel {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+}
+
+.formInput {
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.profileButton {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancelButton {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: #eee;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 0.5rem;
+}
+
+.profileButton:hover {
+  background: #0059c1;
+}
+
+.cancelButton:hover {
+  background: #ddd;
+}
+
+.success {
+  color: #1a7f37;
+  background: #e6f4ea;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.98rem;
+}
+
+/* Responsive Design with Proper Breakpoints */
+
+/* Huge Screens (1280px+) */
+@media only screen and (min-width: 1280px) {
+  .profileCard {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 3rem 3.5rem;
+    border-radius: 20px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 1.2rem;
+  }
+  
+  .profileForm {
+    gap: 1.5rem;
+  }
+  
+  .formLabel {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .formInput {
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+  }
+  
+  .success {
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+}
+
+/* Desktop (992px - 1279px) */
+@media only screen and (min-width: 992px) and (max-width: 1279px) {
+  .profileCard {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 2.5rem 3rem;
+    border-radius: 18px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 1.1rem;
+  }
+  
+  .profileForm {
+    gap: 1.3rem;
+  }
+  
+  .formLabel {
+    font-size: 1.05rem;
+    font-weight: 550;
+  }
+  
+  .formInput {
+    padding: 0.7rem 0.9rem;
+    font-size: 1.05rem;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.7rem 1.4rem;
+    font-size: 1.05rem;
+  }
+  
+  .success {
+    padding: 0.7rem 1.1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Tablet (768px - 991px) */
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .profileCard {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 2rem 2.5rem;
+    border-radius: 16px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 96px;
+    height: 96px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 1rem;
+  }
+  
+  .profileForm {
+    gap: 1.2rem;
+  }
+  
+  .formLabel {
+    font-size: 1rem;
+  }
+  
+  .formInput {
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+  
+  .success {
+    padding: 0.6rem 1rem;
+    font-size: 0.98rem;
+  }
+}
+
+/* Mobile (480px - 767px) */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  .profileCard {
+    max-width: 360px;
+    margin: 24px auto;
+    padding: 1.6rem 2rem;
+    border-radius: 14px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 0.9rem;
+  }
+  
+  .profileForm {
+    gap: 1rem;
+  }
+  
+  .formLabel {
+    font-size: 0.95rem;
+  }
+  
+  .formInput {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.95rem;
+  }
+  
+  .cancelButton {
+    margin-left: 0.5rem;
+  }
+  
+  .success {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Mobile (below 480px) */
+@media only screen and (max-width: 479px) {
+  .profileCard {
+    max-width: 320px;
+    margin: 16px auto;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 0.8rem;
+  }
+  
+  .profileForm {
+    gap: 0.8rem;
+  }
+  
+  .formLabel {
+    font-size: 0.85rem;
+  }
+  
+  .formInput {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  
+  .cancelButton {
+    margin-left: 0.4rem;
+  }
+  
+  .success {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra Small Mobile (320px and below) */
+@media only screen and (max-width: 320px) {
+  .profileCard {
+    max-width: 280px;
+    margin: 12px auto;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+  }
+  
+  .avatar, .avatarPlaceholder {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .avatarPlaceholder {
+    font-size: 0.75rem;
+  }
+  
+  .profileForm {
+    gap: 0.7rem;
+  }
+  
+  .formLabel {
+    font-size: 0.8rem;
+  }
+  
+  .formInput {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .profileButton, .cancelButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .cancelButton {
+    margin-left: 0.3rem;
+  }
+  
+  .success {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+  }
+} 
