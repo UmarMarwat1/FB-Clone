@@ -50,7 +50,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
         },
         body: JSON.stringify({
           userId: user.id,
-          title: 'New Conversation'
+          title: "New Conversation"
         })
       })
       
@@ -60,7 +60,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
         onSelectConversation(newConversation)
       }
     } catch (error) {
-      console.error('Failed to create conversation:', error)
+      console.error("Failed to create conversation:", error)
     }
   }
 

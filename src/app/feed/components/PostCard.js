@@ -15,7 +15,7 @@ export default function PostCard({ post, user, onPostDeleted }) {
   useEffect(() => {
     fetchComments()
     fetchLikes()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchComments() {
     try {
