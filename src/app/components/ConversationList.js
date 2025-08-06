@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import styles from "./chatbot.module.css"
 import { supabase } from "../../../lib/supabaseCLient"
 
@@ -9,13 +9,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
   const [editingId, setEditingId] = useState(null)
   const [editTitle, setEditTitle] = useState("")
 
-  useEffect(() => {
-    if (user?.id) {
-      loadConversations()
-    }
-  }, [user])
-
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     if (!user?.id) return
     
     try {
@@ -35,7 +29,13 @@ export default function ConversationList({ user, onSelectConversation, currentCo
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.id])
+
+  useEffect(() => {
+    if (user?.id) {
+      loadConversations()
+    }
+  }, [user, loadConversations])
 
   const createNewConversation = async () => {
     try {
@@ -133,7 +133,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
                 type="text"
                 value={editTitle || ""}
                 onChange={(e) => setEditTitle(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && updateConversationTitle(conversation.id, editTitle)}
+                                              onKeyPress={(e) => e.key === "Enter" && updateConversationTitle(conversation.id, editTitle)}
                 onBlur={() => updateConversationTitle(conversation.id, editTitle)}
                 autoFocus
                 className={styles.editInput}

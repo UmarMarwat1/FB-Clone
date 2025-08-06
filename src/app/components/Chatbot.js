@@ -259,7 +259,7 @@ export default function Chatbot({ user }) {
                             <textarea
                               value={editMessageContent}
                               onChange={(e) => setEditMessageContent(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && updateMessage(msg.id, editMessageContent)}
+                              onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && updateMessage(msg.id, editMessageContent)}
                               onBlur={() => updateMessage(msg.id, editMessageContent)}
                               className={styles.editMessageInput}
                               autoFocus
@@ -277,7 +277,7 @@ export default function Chatbot({ user }) {
                             <div className={styles.messageTime}>
                               {msg.timestamp?.toLocaleTimeString()}
                             </div>
-                            {msg.role === 'user' && (
+                            {msg.role === "user" && (
                               <div className={styles.messageActions}>
                                 <button
                                   onClick={() => startEditingMessage(msg)}
