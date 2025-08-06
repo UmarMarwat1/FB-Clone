@@ -182,7 +182,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
       {conversations.length === 0 && !loading && (
         <div className={styles.emptyState}>
           <p>No conversations yet</p>
-          <p>Click "New Chat" to start</p>
+          <p>Click &quot;New Chat&quot; to start</p>
         </div>
       )}
     </div>
