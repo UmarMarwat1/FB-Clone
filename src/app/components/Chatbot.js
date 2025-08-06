@@ -14,6 +14,7 @@ export default function Chatbot({ user }) {
   const [editingMessageId, setEditingMessageId] = useState(null)
   const [editMessageContent, setEditMessageContent] = useState("")
   const messagesEndRef = useRef(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -22,6 +23,17 @@ export default function Chatbot({ user }) {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const sendMessage = async () => {
     if (!input.trim() || !currentConversation || !user?.id) return
@@ -222,8 +234,9 @@ export default function Chatbot({ user }) {
           </div>
           
           <div className={styles.chatContent}>
+            {isMobile && showSidebar && <div className={styles.sidebarBackdrop} onClick={() => setShowSidebar(false)} />}
             {showSidebar && (
-              <div className={styles.sidebar}>
+              <div className={`${styles.sidebar} ${isMobile && showSidebar ? styles.show : ''}`}>
                 <ConversationList 
                   user={user}
                   onSelectConversation={selectConversation}
@@ -316,7 +329,7 @@ export default function Chatbot({ user }) {
                     <textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      placeholder="Type your message... (Press Enter to send)"
+                      placeholder="Type your message..."
                       onKeyPress={handleKeyPress}
                       disabled={isLoading}
                       rows={1}

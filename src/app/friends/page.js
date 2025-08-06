@@ -170,13 +170,14 @@ export default function FriendsPage() {
   }
 
   const getRequestUserName = (request, isSender = false) => {
-    const userId = isSender ? request.sender_id : request.receiver_id
-    return `User ${userId.slice(0, 8)}`
+    const user = isSender ? request.sender : request.receiver
+    return user?.username || user?.full_name || `User ${user?.id?.slice(0, 8) || 'Unknown'}`
   }
 
   const getRequestUserAvatar = (request, isSender = false) => {
-    const userId = isSender ? request.sender_id : request.receiver_id
-    return userId.charAt(0).toUpperCase()
+    const user = isSender ? request.sender : request.receiver
+    const name = user?.username || user?.full_name || user?.id || ''
+    return name.charAt(0).toUpperCase()
   }
 
   if (!user) return <div className={styles.loading}>Loading...</div>
