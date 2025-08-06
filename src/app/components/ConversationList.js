@@ -125,7 +125,7 @@ export default function ConversationList({ user, onSelectConversation, currentCo
       
              {conversations.map(conversation => (
          <div key={conversation.id} className={`${styles.conversationItem} ${
-           currentConversation?.id === conversation.id ? styles.active : ''
+           currentConversation?.id === conversation.id ? styles.active : ""
          }`}>
           {editingId === conversation.id ? (
             <div className={styles.editForm}>
