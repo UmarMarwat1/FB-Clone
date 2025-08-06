@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase, getComments, addComment, deleteComment, getLikes, toggleLike } from "../../../../lib/supabaseCLient"
 import styles from "../feed.module.css"
 
@@ -12,7 +12,7 @@ export default function PostCard({ post, user, onPostDeleted }) {
   const [showDeleteMenu, setShowDeleteMenu] = useState(false)
 
   // Fetch comments and likes when component mounts
-  useState(() => {
+  useEffect(() => {
     fetchComments()
     fetchLikes()
   }, [])
