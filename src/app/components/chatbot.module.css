@@ -142,6 +142,7 @@
 }
 
 .conversationItem {
+  color:black;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 8px;
@@ -526,8 +527,24 @@
   transform: none;
 }
 
+/* Mobile Backdrop */
+.mobileBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
+  .mobileBackdrop {
+    display: block;
+  }
+  
   .sidebarBackdrop {
     display: block;
   }
@@ -714,7 +731,8 @@
   }
   
   .newChatBtn {
-    padding: 8px 12px;
+    margin-top: 15px;
+    padding: 10px 12px;
     font-size: 12px;
   }
   

@@ -15,6 +15,7 @@ export default function Chatbot({ user }) {
   const [editMessageContent, setEditMessageContent] = useState("")
   const messagesEndRef = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
+  const chatWindowRef = useRef(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -34,6 +35,34 @@ export default function Chatbot({ user }) {
     
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Prevent body scroll when chat is open on mobile
+  useEffect(() => {
+    if (isOpen && isMobile) {
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+    } else {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+  }, [isOpen, isMobile])
+
+  // Prevent scroll event bubbling
+  const handleScroll = (e) => {
+    e.stopPropagation()
+  }
+
+  const handleTouchMove = (e) => {
+    e.stopPropagation()
+  }
 
   const sendMessage = async () => {
     if (!input.trim() || !currentConversation || !user?.id) return
@@ -215,7 +244,20 @@ export default function Chatbot({ user }) {
       </button>
 
       {isOpen && (
-        <div className={styles.chatWindow}>
+        <>
+          {isMobile && (
+            <div 
+              className={styles.mobileBackdrop}
+              onClick={() => setIsOpen(false)}
+              onTouchMove={handleTouchMove}
+            />
+          )}
+          <div 
+            className={styles.chatWindow}
+            ref={chatWindowRef}
+            onScroll={handleScroll}
+            onTouchMove={handleTouchMove}
+          >
           <div className={styles.chatHeader}>
             <button 
               className={styles.sidebarToggle}
@@ -236,7 +278,11 @@ export default function Chatbot({ user }) {
           <div className={styles.chatContent}>
             {isMobile && showSidebar && <div className={styles.sidebarBackdrop} onClick={() => setShowSidebar(false)} />}
             {showSidebar && (
-              <div className={`${styles.sidebar} ${isMobile && showSidebar ? styles.show : ''}`}>
+              <div 
+                className={`${styles.sidebar} ${isMobile && showSidebar ? styles.show : ''}`}
+                onScroll={handleScroll}
+                onTouchMove={handleTouchMove}
+              >
                 <ConversationList 
                   user={user}
                   onSelectConversation={selectConversation}
@@ -259,7 +305,11 @@ export default function Chatbot({ user }) {
                 </div>
               ) : (
                 <>
-                  <div className={styles.messages}>
+                  <div 
+                    className={styles.messages}
+                    onScroll={handleScroll}
+                    onTouchMove={handleTouchMove}
+                  >
                     {messages.length === 0 && (
                       <div className={styles.welcomeMessage}>
                         <p>Start a conversation with AI!</p>
@@ -347,6 +397,7 @@ export default function Chatbot({ user }) {
             </div>
           </div>
         </div>
+        </>
       )}
     </>
   )
