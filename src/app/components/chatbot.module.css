@@ -640,7 +640,7 @@
 @media (max-width: 480px) {
   .chatWindow {
     width: 100vw;
-    height: 100vh;
+    height: 95vh;
     right: 0;
     left: 0;
     bottom: 0;
