@@ -46,6 +46,8 @@ export default function LoginPage() {
             {error && <p className={styles.fbError}>{error}</p>}
             <div className={styles.fbDivider}></div>
             <button type="button" className={styles.fbCreateBtn} onClick={() => router.push("/signup")}>Create New Account</button>
+            <div className={styles.fbDivider}></div>
+            <button type="button" className={styles.fbForgetBtn} onClick={() => router.push("/forget-password")}>Forgot Password?</button>
           </form>
         </div>
       </div>
