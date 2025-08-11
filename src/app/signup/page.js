@@ -16,17 +16,31 @@ export default function SignupPage() {
     e.preventDefault()
     setError(null)
     setSuccess(null)
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) setError(error.message)
-    else {
+    
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        setError(error.message)
+        return
+      }
+      
       // Insert into profiles table
       const user = data.user
       if (user) {
-        await supabase.from('profiles').insert([
+        const { error: profileError } = await supabase.from('profiles').insert([
           { id: user.id, username }
-        ], { upsert: true }) // upsert se agar already hai to update nahi karega, warna insert karega
+        ])
+        
+        if (profileError) {
+          console.error('Profile insertion error:', profileError)
+          setError(`Database error saving new user: ${profileError.message}`)
+          return
+        }
       }
       setSuccess("Account created! Please check your email to verify.")
+    } catch (err) {
+      console.error('Signup error:', err)
+      setError(`Signup failed: ${err.message}`)
     }
   }
 

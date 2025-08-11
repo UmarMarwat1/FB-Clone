@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { supabase } from "../../../../lib/supabaseCLient"
+import { supabase, getFriends } from "../../../../lib/supabaseCLient"
 import PostCard from "./PostCard"
 import styles from "../feed.module.css"
 
@@ -13,33 +13,49 @@ export default function PostsFeed({ user }) {
   }, [])
 
   async function fetchPosts() {
-    let { data, error } = await supabase
-      .from("posts")
-      .select("id, content, created_at, user_id")
-      .order("created_at", { ascending: false })
-    
-    if (error) {
-      setError(error.message)
-      return
-    }
-    
-    // Get user profiles for all post authors
-    if (data) {
-      const userIds = [...new Set(data.map(post => post.user_id))];
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, username, full_name")
-        .in("id", userIds);
+    try {
+      // First get the current user's friends
+      const friends = await getFriends(user.id)
+      const friendIds = friends.map(friendship => 
+        friendship.user1_id === user.id ? friendship.user2_id : friendship.user1_id
+      )
       
-      // Combine posts with user profiles
-      const postsWithProfiles = data.map(post => ({
-        ...post,
-        author: profiles?.find(profile => profile.id === post.user_id)
-      }));
+      // Add current user to the list so they can see their own posts
+      friendIds.push(user.id)
       
-      setPosts(postsWithProfiles || [])
-    } else {
-      setPosts([])
+      // Fetch posts only from friends (including user's own posts)
+      let { data, error } = await supabase
+        .from("posts")
+        .select("id, content, created_at, user_id")
+        .in("user_id", friendIds)
+        .order("created_at", { ascending: false })
+      
+      if (error) {
+        setError(error.message)
+        return
+      }
+      
+      // Get user profiles for all post authors
+      if (data) {
+        const userIds = [...new Set(data.map(post => post.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, username, full_name")
+          .in("id", userIds);
+        
+        // Combine posts with user profiles
+        const postsWithProfiles = data.map(post => ({
+          ...post,
+          author: profiles?.find(profile => profile.id === post.user_id)
+        }));
+        
+        setPosts(postsWithProfiles || [])
+      } else {
+        setPosts([])
+      }
+    } catch (err) {
+      setError('Failed to fetch posts')
+      console.error(err)
     }
   }
 
@@ -54,7 +70,7 @@ export default function PostsFeed({ user }) {
       
       {posts.length === 0 ? (
         <div className={styles.emptyState}>
-          <p>No posts yet. Be the first to share something!</p>
+          <p>No posts from friends yet. Add some friends to see their posts!</p>
         </div>
       ) : (
         posts.map((post) => (

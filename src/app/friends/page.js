@@ -169,13 +169,17 @@ export default function FriendsPage() {
     return name.charAt(0).toUpperCase();
   }
 
-  const getRequestUserName = (request, isSender = false) => {
-    const user = isSender ? request.sender : request.receiver
+  const getRequestUserName = (request, isOutgoing = false) => {
+    // For incoming requests, show sender's name
+    // For outgoing requests, show receiver's name
+    const user = isOutgoing ? request.receiver : request.sender
     return user?.username || user?.full_name || `User ${user?.id?.slice(0, 8) || 'Unknown'}`
   }
 
-  const getRequestUserAvatar = (request, isSender = false) => {
-    const user = isSender ? request.sender : request.receiver
+  const getRequestUserAvatar = (request, isOutgoing = false) => {
+    // For incoming requests, show sender's avatar
+    // For outgoing requests, show receiver's avatar
+    const user = isOutgoing ? request.receiver : request.sender
     const name = user?.username || user?.full_name || user?.id || ''
     return name.charAt(0).toUpperCase()
   }

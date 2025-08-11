@@ -67,7 +67,7 @@ export async function POST(request) {
       user_id: userId,
       content: message,
       role: 'user'
-    })
+    }).select()
 
     if (userMsgError) {
       console.error("Error saving user message:", userMsgError)
@@ -83,7 +83,7 @@ export async function POST(request) {
       user_id: userId,
       content: aiResponse,
       role: 'assistant'
-    })
+    }).select()
 
     if (aiMsgError) {
       console.error("Error saving AI message:", aiMsgError)
@@ -105,7 +105,11 @@ export async function POST(request) {
     }
 
     console.log("All database operations completed successfully")
-    return Response.json({ response: aiResponse })
+    return Response.json({ 
+      response: aiResponse,
+      userMessageId: userMsgData?.[0]?.id,
+      aiMessageId: aiMsgData?.[0]?.id
+    })
 
   } catch (error) {
     console.error("Chat API error:", error)

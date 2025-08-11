@@ -95,7 +95,18 @@ export default function Chatbot({ user }) {
         throw new Error(data.error)
       }
       
+      // Update the user message with the actual ID from database
+      setMessages(prev => {
+        const updatedMessages = prev.map(msg => 
+          msg.content === input && msg.role === "user" && !msg.id 
+            ? { ...msg, id: data.userMessageId }
+            : msg
+        )
+        return updatedMessages
+      })
+      
       const botMessage = { 
+        id: data.aiMessageId,
         role: "assistant", 
         content: data.response, 
         timestamp: new Date() 
@@ -181,27 +192,103 @@ export default function Chatbot({ user }) {
 
   const deleteMessage = async (messageId) => {
     try {
+      // Validate message ID
+      if (!messageId || messageId === 'undefined' || messageId === undefined) {
+        console.error("Invalid message ID:", messageId)
+        alert("Cannot delete message: Invalid message ID")
+        return
+      }
+      
+      // Add confirmation before deleting
+      if (!confirm("Are you sure you want to delete this message and its AI response?")) {
+        return
+      }
+      
+      console.log("Attempting to delete message:", messageId)
+      
       // Get user session for authentication
       const { data: { session } } = await supabase.auth.getSession()
       
-      await fetch(`/api/messages/${messageId}`, {
+      // Find the message to be deleted
+      const messageToDelete = messages.find(msg => msg.id === messageId)
+      if (!messageToDelete) {
+        console.error("Message not found:", messageId)
+        return
+      }
+      
+      // If it's a user message, also find the corresponding AI message
+      let aiMessageId = null
+      if (messageToDelete.role === 'user') {
+        const messageIndex = messages.findIndex(msg => msg.id === messageId)
+        if (messageIndex !== -1 && messageIndex + 1 < messages.length) {
+          const nextMessage = messages[messageIndex + 1]
+          if (nextMessage.role === 'assistant') {
+            aiMessageId = nextMessage.id
+            console.log("Found corresponding AI message:", aiMessageId)
+          }
+        }
+      }
+      
+      // Delete the user message
+      const response = await fetch(`/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session?.access_token}` // Add auth token
         }
       })
-      setMessages(prev => prev.filter(msg => msg.id !== messageId))
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete message')
+      }
+      
+      console.log("User message deleted successfully from server")
+      
+      // Delete the AI message if it exists
+      if (aiMessageId) {
+        const aiResponse = await fetch(`/api/messages/${aiMessageId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}` // Add auth token
+          }
+        })
+        
+        if (!aiResponse.ok) {
+          const errorData = await aiResponse.json()
+          console.error("Failed to delete AI message:", errorData)
+          // Don't throw error for AI message deletion failure
+        } else {
+          console.log("AI message deleted successfully from server")
+        }
+      }
+      
+      // Update local state by removing both messages
+      setMessages(prev => {
+        const updatedMessages = prev.filter(msg => msg.id !== messageId && msg.id !== aiMessageId)
+        console.log("Updated messages count:", updatedMessages.length)
+        return updatedMessages
+      })
     } catch (error) {
       console.error("Failed to delete message:", error)
+      alert("Failed to delete message: " + error.message)
     }
   }
 
   const updateMessage = async (messageId, newContent) => {
     try {
+      // Validate message ID
+      if (!messageId || messageId === 'undefined' || messageId === undefined) {
+        console.error("Invalid message ID for update:", messageId)
+        alert("Cannot update message: Invalid message ID")
+        return
+      }
+      
+      console.log("Attempting to update message:", messageId, "with content:", newContent)
+      
       // Get user session for authentication
       const { data: { session } } = await supabase.auth.getSession()
       
-      await fetch(`/api/messages/${messageId}`, {
+      const response = await fetch(`/api/messages/${messageId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -209,6 +296,15 @@ export default function Chatbot({ user }) {
         },
         body: JSON.stringify({ content: newContent })
       })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update message')
+      }
+      
+      console.log("Message updated successfully on server")
+      
+      // Update local state
       setMessages(prev => 
         prev.map(msg => msg.id === messageId ? { ...msg, content: newContent } : msg)
       )
@@ -216,18 +312,39 @@ export default function Chatbot({ user }) {
       setEditMessageContent("")
     } catch (error) {
       console.error("Failed to update message:", error)
+      alert("Failed to update message: " + error.message)
     }
   }
 
   const startEditingMessage = (message) => {
     setEditingMessageId(message.id)
-    setEditMessageContent(message.content)
+    // Don't set the content immediately to avoid the original text appearing
+    setEditMessageContent("")
   }
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
+    }
+  }
+
+  const handleEditKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      updateMessage(editingMessageId, editMessageContent)
+    }
+  }
+
+  const handleEditInputChange = (e) => {
+    setEditMessageContent(e.target.value)
+  }
+
+  const handleEditFocus = (e) => {
+    // Set the content only when the input is focused
+    const message = messages.find(msg => msg.id === editingMessageId)
+    if (message && !editMessageContent) {
+      setEditMessageContent(message.content)
     }
   }
 
@@ -316,20 +433,24 @@ export default function Chatbot({ user }) {
                       </div>
                     )}
                     {messages.map((msg, index) => (
-                      <div key={msg.id || index} className={`${styles.message} ${styles[msg.role]}`}>
+                        <div key={msg.id || index} className={`${styles.message} ${styles[msg.role]}`}>
                         {editingMessageId === msg.id ? (
                           <div className={styles.editMessageForm}>
                             <textarea
                               value={editMessageContent}
-                              onChange={(e) => setEditMessageContent(e.target.value)}
-                              onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && updateMessage(msg.id, editMessageContent)}
+                              onChange={handleEditInputChange}
+                              onKeyPress={handleEditKeyPress}
                               onBlur={() => updateMessage(msg.id, editMessageContent)}
+                              onFocus={handleEditFocus}
                               className={styles.editMessageInput}
                               autoFocus
                             />
                             <div className={styles.editMessageActions}>
                               <button onClick={() => updateMessage(msg.id, editMessageContent)}>Save</button>
-                              <button onClick={() => setEditingMessageId(null)}>Cancel</button>
+                              <button onClick={() => {
+                                setEditingMessageId(null)
+                                setEditMessageContent("")
+                              }}>Cancel</button>
                             </div>
                           </div>
                         ) : (
@@ -340,24 +461,24 @@ export default function Chatbot({ user }) {
                             <div className={styles.messageTime}>
                               {msg.timestamp?.toLocaleTimeString()}
                             </div>
-                            {msg.role === "user" && (
-                              <div className={styles.messageActions}>
-                                <button
-                                  onClick={() => startEditingMessage(msg)}
-                                  className={styles.messageActionBtn}
-                                  title="Edit message"
-                                >
-                                  ✏️
-                                </button>
-                                <button
-                                  onClick={() => deleteMessage(msg.id)}
-                                  className={styles.messageActionBtn}
-                                  title="Delete message"
-                                >
-                                  🗑️
-                                </button>
-                              </div>
-                            )}
+                                                         {msg.role === "user" && msg.id && (
+                               <div className={styles.messageActions}>
+                                 <button
+                                   onClick={() => startEditingMessage(msg)}
+                                   className={styles.messageActionBtn}
+                                   title="Edit message"
+                                 >
+                                   ✏️
+                                 </button>
+                                 <button
+                                   onClick={() => deleteMessage(msg.id)}
+                                   className={styles.messageActionBtn}
+                                   title="Delete message"
+                                 >
+                                   🗑️
+                                 </button>
+                               </div>
+                             )}
                           </>
                         )}
                       </div>

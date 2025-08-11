@@ -420,7 +420,8 @@
 
 .messageTime {
   font-size: 11px;
-  opacity: 0.6;
+  opacity: 0.8;
+  color: black;
   margin-top: 6px;
   text-align: right;
 }
