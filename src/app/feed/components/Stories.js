@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../../../../lib/supabaseCLient'
 import StoriesFeed from '../../components/StoriesFeed'
 import { useStories } from '../../context/StoriesContext'
@@ -10,11 +10,7 @@ export default function Stories() {
   const [loading, setLoading] = useState(true)
   const { handleUserChange, clearCache } = useStories()
 
-  useEffect(() => {
-    getCurrentUser()
-  }, [])
-
-  const getCurrentUser = async () => {
+  const getCurrentUser = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       
@@ -36,14 +32,18 @@ export default function Stories() {
         setCurrentUser(userData)
         handleUserChange(userData)
       }
-          } catch (error) {
-        console.error('Error getting current user:', error)
-        // Clear cache if there's an error (user might be logged out)
-        clearCache()
-      } finally {
-        setLoading(false)
-      }
-  }
+    } catch (error) {
+      console.error('Error getting current user:', error)
+      // Clear cache if there's an error (user might be logged out)
+      clearCache()
+    } finally {
+      setLoading(false)
+    }
+  }, [handleUserChange, clearCache])
+
+  useEffect(() => {
+    getCurrentUser()
+  }, [getCurrentUser])
 
   if (loading) {
     return (

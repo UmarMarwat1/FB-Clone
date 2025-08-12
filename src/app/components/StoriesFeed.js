@@ -243,7 +243,7 @@ export default function StoriesFeed({ currentUser }) {
                 <p>Please set up the database by:</p>
                 <ol>
                   <li>Running the SQL commands from STORIES_SETUP.md</li>
-                  <li>Creating the 'stories' storage bucket in Supabase</li>
+                  <li>Creating the &apos;stories&apos; storage bucket in Supabase</li>
                   <li>Setting up the storage policies</li>
                 </ol>
               </div>
@@ -301,7 +301,7 @@ export default function StoriesFeed({ currentUser }) {
              onClick={() => setShowUpload(true)}
            >
              <div className={styles.storyImage}>
-                             {/* Show user's profile picture or default avatar */}
+                             {/* Show user&apos;s profile picture or default avatar */}
               <img 
                 src={currentUser?.avatar_url || '/default-avatar.svg'}
                 alt="Your profile"
