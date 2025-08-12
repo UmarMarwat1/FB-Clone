@@ -1,0 +1,895 @@
+/* Facebook Stories Section - Card Style */
+.storiesSection {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0px 0;
+  margin-bottom: 16px;
+  box-shadow: none;
+  position: relative;
+}
+
+/* Beautiful Loading Stories Section */
+.storiesLoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  margin: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.storiesLoadingContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.storiesLoadingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 1;
+  position: relative;
+}
+
+.storiesLoadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.storiesLoadingText {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0;
+}
+
+.storiesLoadingDots {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.storiesLoadingDot {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite both;
+}
+
+.storiesLoadingDot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.storiesLoadingDot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.storiesLoadingDot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.storiesContainer {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+.storiesContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navigation Arrows - Facebook Style */
+.navArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #65676b;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.navArrow:hover {
+  background: #f0f2f5;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navArrow:first-child {
+  left: 8px;
+}
+
+.navArrow:last-child {
+  right: 8px;
+}
+
+/* Story Item - Facebook Card Style */
+.storyItem {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease;
+  width: 112px;
+  scroll-snap-align: start;
+}
+
+.storyItem:hover {
+  transform: scale(1.02);
+}
+
+/* Story Card Container - Facebook Style */
+.storyImage {
+  width: 112px;
+  height: 200px;
+  border-radius: 12px;
+  position: relative;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 2px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.storyImage:hover {
+  transform: scale(1.05);
+}
+
+.storyImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+}
+
+/* Story Name - Facebook Style */
+.storyName {
+  font-size: 12px;
+  color: #65676b;
+  text-align: center;
+  max-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Add Story Button - Facebook Card Style */
+.addStory {
+  background: transparent;
+  border: none;
+}
+
+.addStory .storyImage {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2px solid #ffffff;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%234CAF50;stop-opacity:1" /><stop offset="50%" style="stop-color:%238BC34A;stop-opacity:1" /><stop offset="100%" style="stop-color:%23689F38;stop-opacity:1" /></linearGradient></defs><rect width="100" height="100" fill="url(%23bg)"/><circle cx="30" cy="30" r="8" fill="%23ffffff" opacity="0.3"/><circle cx="70" cy="20" r="5" fill="%23ffffff" opacity="0.2"/><circle cx="20" cy="70" r="6" fill="%23ffffff" opacity="0.25"/></svg>');
+}
+
+.addIcon {
+  color: #1877f2;
+  font-size: 32px;
+  font-weight: bold;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Picture Overlay - Facebook Style */
+.storyProfilePic {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.storyProfilePic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+
+/* Story Upload Modal - Facebook Style */
+.uploadModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.uploadContent {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.uploadHeader {
+  padding: 16px;
+  border-bottom: 1px solid #e4e6ea;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.uploadTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1e21;
+}
+
+.closeBtn {
+  background: #f0f2f5;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #65676b;
+  transition: background-color 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: #e4e6ea;
+}
+
+.uploadBody {
+  padding: 16px;
+  max-height: calc(80vh - 120px);
+  overflow-y: auto;
+}
+
+.textInput {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #e4e6ea;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 16px;
+  background: #ffffff;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: #1877f2;
+}
+
+.mediaSection {
+  margin-bottom: 16px;
+}
+
+.mediaLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.mediaUpload {
+  border: 2px dashed #e4e6ea;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+  background: #ffffff;
+}
+
+.mediaUpload:hover {
+  border-color: #1877f2;
+  background: #f0f8ff;
+}
+
+.mediaUpload.dragOver {
+  border-color: #1877f2;
+  background: #f0f8ff;
+}
+
+.uploadIcon {
+  font-size: 24px;
+  color: #65676b;
+  margin-bottom: 8px;
+}
+
+.uploadText {
+  font-size: 13px;
+  color: #65676b;
+}
+
+.fileInput {
+  display: none;
+}
+
+.mediaPreview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mediaItem {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.mediaItem img,
+.mediaItem video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removeMedia {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.videoDuration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.uploadFooter {
+  padding: 16px;
+  border-top: 1px solid #e4e6ea;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: #ffffff;
+}
+
+.cancelBtn {
+  background: #f0f2f5;
+  color: #1c1e21;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.cancelBtn:hover {
+  background: #e4e6ea;
+}
+
+.postBtn {
+  background: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.postBtn:hover {
+  background: #166fe5;
+}
+
+.postBtn:disabled {
+  background: #e4e6ea;
+  color: #bcc0c4;
+  cursor: not-allowed;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Story Viewer - Facebook Style */
+.storyViewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000000;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewerHeader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+  padding: 16px;
+  z-index: 1;
+}
+
+.progressBars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 1px;
+  transition: width 0.1s linear;
+}
+
+.storyUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.storyUserAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.storyUserName {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.storyTime {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+}
+
+.viewerCloseBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 1000;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.viewerCloseBtn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+.storyContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.storyMedia {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.storyText {
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  right: 16px;
+  color: #ffffff;
+  font-size: 18px;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.navigationArea {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.prevArea {
+  left: 0;
+}
+
+.nextArea {
+  right: 0;
+}
+
+/* Story Viewer Options - Facebook Style */
+.storyViewerOptions {
+  position: absolute;
+  top: 16px;
+  right: 60px;
+  z-index: 10;
+}
+
+.storyViewerOptionBtn {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.storyViewerOptionBtn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.storyViewerOptionsMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 150px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.storyViewerOptionItem {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #1c1e21;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.storyViewerOptionItem:hover {
+  background: #f0f2f5;
+}
+
+.storyViewerOptionItem:first-child {
+  border-bottom: 1px solid #e4e6ea;
+}
+
+/* Responsive Design - Facebook Style */
+@media (max-width: 768px) {
+  .storiesContainer {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .storyItem {
+    width: 90px;
+  }
+
+  .storyImage {
+    width: 90px;
+    height: 160px;
+  }
+
+  .storyName {
+    font-size: 11px;
+    max-width: 90px;
+  }
+
+  .storyProfilePic {
+    width: 28px;
+    height: 28px;
+  }
+
+  .uploadContent {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .uploadHeader {
+    padding: 12px;
+  }
+
+  .uploadBody {
+    padding: 12px;
+  }
+
+  .textInput {
+    min-height: 80px;
+    font-size: 14px;
+  }
+
+  .mediaUpload {
+    padding: 16px;
+  }
+
+  .mediaPreview {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .storyText {
+    font-size: 16px;
+    bottom: 60px;
+  }
+
+  .viewerHeader {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .storiesContainer {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .storyItem {
+    width: 80px;
+  }
+
+  .storyImage {
+    width: 80px;
+    height: 140px;
+  }
+
+  .storyName {
+    font-size: 10px;
+    max-width: 80px;
+  }
+
+  .storyProfilePic {
+    width: 24px;
+    height: 24px;
+  }
+
+  .uploadContent {
+    width: 98%;
+    margin: 10px;
+  }
+
+  .mediaPreview {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .storyText {
+    font-size: 14px;
+    bottom: 40px;
+  }
+}
+
+/* Dark mode support - Facebook Style */
+@media (prefers-color-scheme: dark) {
+  .storiesSection {
+    /* background: #242526; */
+    border-color: #3a3b3c;
+  }
+
+  .uploadContent {
+    background: #242526;
+  }
+
+  .uploadHeader {
+    border-bottom-color: #3a3b3c;
+    background: #242526;
+  }
+
+  .uploadTitle {
+    color: #e4e6ea;
+  }
+
+  .closeBtn {
+    background: #3a3b3c;
+    color: #b0b3b8;
+  }
+
+  .closeBtn:hover {
+    background: #4e4f50;
+  }
+
+  .textInput {
+    background: #3a3b3c;
+    border-color: #4e4f50;
+    color: #e4e6ea;
+  }
+
+  .textInput:focus {
+    border-color: #1877f2;
+  }
+
+  .mediaLabel {
+    color: #e4e6ea;
+  }
+
+  .mediaUpload {
+    border-color: #4e4f50;
+    background: #3a3b3c;
+  }
+
+  .mediaUpload:hover {
+    border-color: #1877f2;
+    background: #2a2b2c;
+  }
+
+  .uploadText {
+    color: #b0b3b8;
+  }
+
+  .cancelBtn {
+    background: #3a3b3c;
+    color: #e4e6ea;
+  }
+
+  .cancelBtn:hover {
+    background: #4e4f50;
+  }
+
+  .uploadFooter {
+    background: #242526;
+    border-top-color: #3a3b3c;
+  }
+}

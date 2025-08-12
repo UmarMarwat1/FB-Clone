@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ChatbotWrapper from "./components/ChatbotWrapper";
+import { StoriesProvider } from "./context/StoriesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,8 +22,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-        <ChatbotWrapper />
+        <StoriesProvider>
+          {children}
+          <ChatbotWrapper />
+        </StoriesProvider>
       </body>
     </html>
   );

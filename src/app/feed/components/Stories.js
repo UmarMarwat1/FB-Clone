@@ -1,27 +1,65 @@
-import styles from "../feed.module.css"
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '../../../../lib/supabaseCLient'
+import StoriesFeed from '../../components/StoriesFeed'
+import { useStories } from '../../context/StoriesContext'
 
 export default function Stories() {
-  // Mock stories data
-  const stories = [
-    { id: 1, name: "Your Story", image: "https://via.placeholder.com/60/1877f2/ffffff?text=+" },
-    { id: 2, name: "John Doe", image: "https://via.placeholder.com/60/42b72a/ffffff?text=J" },
-    { id: 3, name: "Jane Smith", image: "https://via.placeholder.com/60/e4405f/ffffff?text=J" },
-    { id: 4, name: "Mike Johnson", image: "https://via.placeholder.com/60/f7b928/ffffff?text=M" },
-    { id: 5, name: "Sarah Wilson", image: "https://via.placeholder.com/60/8e44ad/ffffff?text=S" },
-  ]
+  const [currentUser, setCurrentUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const { handleUserChange, clearCache } = useStories()
 
-  return (
-    <div className={styles.storiesSection}>
-      <div className={styles.storiesContainer}>
-        {stories.map((story) => (
-          <div key={story.id} className={styles.storyItem}>
-            <div className={styles.storyImage}>
-              <img src={story.image} alt={story.name} />
-            </div>
-            <span className={styles.storyName}>{story.name}</span>
-          </div>
-        ))}
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
+
+  const getCurrentUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Get user profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        const userData = {
+          id: user.id,
+          email: user.email,
+          username: profile?.username,
+          full_name: profile?.full_name,
+          avatar_url: profile?.avatar_url
+        }
+        setCurrentUser(userData)
+        handleUserChange(userData)
+      }
+          } catch (error) {
+        console.error('Error getting current user:', error)
+        // Clear cache if there's an error (user might be logged out)
+        clearCache()
+      } finally {
+        setLoading(false)
+      }
+  }
+
+  if (loading) {
+    return (
+      <div style={{ padding: '16px', color: '#65676b' }}>
+        Loading...
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (!currentUser) {
+    return (
+      <div style={{ padding: '16px', color: '#65676b' }}>
+        Please log in to view stories
+      </div>
+    )
+  }
+
+  return <StoriesFeed currentUser={currentUser} />
 } 
