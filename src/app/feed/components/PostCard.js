@@ -10,6 +10,8 @@ export default function PostCard({ post, user, onPostDeleted }) {
   const [commentContent, setCommentContent] = useState("")
   const [error, setError] = useState("")
   const [showDeleteMenu, setShowDeleteMenu] = useState(false)
+  const [selectedMedia, setSelectedMedia] = useState(null)
+  const [showMediaViewer, setShowMediaViewer] = useState(false)
 
   // Fetch comments and likes when component mounts
   useEffect(() => {
@@ -83,6 +85,16 @@ export default function PostCard({ post, user, onPostDeleted }) {
     }
   }
 
+  const handleMediaClick = (media) => {
+    setSelectedMedia(media)
+    setShowMediaViewer(true)
+  }
+
+  const closeMediaViewer = () => {
+    setShowMediaViewer(false)
+    setSelectedMedia(null)
+  }
+
   const formatDate = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -116,14 +128,28 @@ export default function PostCard({ post, user, onPostDeleted }) {
           <div className={styles.postUserAvatar}>
             {(post.author?.username || post.author?.full_name || 'U').charAt(0).toUpperCase()}
           </div>
-          <div className={styles.postUserDetails}>
-            <div className={styles.postUserName}>
-              {post.author?.username || post.author?.full_name || 'Unknown User'}
+                      <div className={styles.postUserDetails}>
+              <div className={styles.postUserName}>
+                {post.author?.username || post.author?.full_name || 'Unknown User'}
+              </div>
+              {(post.feeling || post.activity) && (
+                <div className={styles.postFeelingActivity}>
+                  {post.feeling && (
+                    <span className={styles.feelingText}>
+                      😊 is feeling {post.feeling}
+                    </span>
+                  )}
+                  {post.activity && (
+                    <span className={styles.activityText}>
+                      🎯 is {post.activity}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className={styles.postTime}>
+                {formatDate(post.created_at)}
+              </div>
             </div>
-            <div className={styles.postTime}>
-              {formatDate(post.created_at)}
-            </div>
-          </div>
         </div>
         <div className={styles.postMenuContainer}>
           {isPostAuthor && (
@@ -150,6 +176,125 @@ export default function PostCard({ post, user, onPostDeleted }) {
       <div className={styles.postContent}>
         {post.content}
       </div>
+
+      {/* Media Display */}
+      {post.media && post.media.length > 0 && (
+        <div className={styles.postMedia}>
+          {post.media.length === 1 ? (
+            // Single media item
+            <div className={styles.singleMedia}>
+              {post.media[0].media_type === 'image' ? (
+                <img 
+                  src={post.media[0].media_url} 
+                  alt="Post media"
+                  className={styles.mediaItem}
+                  onClick={() => handleMediaClick(post.media[0])}
+                />
+              ) : (
+                <video 
+                  src={post.media[0].media_url}
+                  controls
+                  className={styles.mediaItem}
+                />
+              )}
+            </div>
+          ) : post.media.length === 2 ? (
+            // Two media items
+            <div className={styles.twoMediaGrid}>
+              {post.media.map((media, index) => (
+                <div key={index} className={styles.mediaGridItem}>
+                  {media.media_type === 'image' ? (
+                    <img 
+                      src={media.media_url} 
+                      alt="Post media"
+                      className={styles.mediaItem}
+                      onClick={() => handleMediaClick(media)}
+                    />
+                  ) : (
+                    <video 
+                      src={media.media_url}
+                      controls
+                      className={styles.mediaItem}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : post.media.length === 3 ? (
+            // Three media items
+            <div className={styles.threeMediaGrid}>
+              <div className={styles.mediaGridItem}>
+                {post.media[0].media_type === 'image' ? (
+                  <img 
+                    src={post.media[0].media_url} 
+                    alt="Post media"
+                    className={styles.mediaItem}
+                    onClick={() => handleMediaClick(post.media[0])}
+                  />
+                ) : (
+                  <video 
+                    src={post.media[0].media_url}
+                    controls
+                    className={styles.mediaItem}
+                  />
+                )}
+              </div>
+              <div className={styles.mediaColumn}>
+                {post.media.slice(1, 3).map((media, index) => (
+                  <div key={index + 1} className={styles.mediaGridItem}>
+                    {media.media_type === 'image' ? (
+                      <img 
+                        src={media.media_url} 
+                        alt="Post media"
+                        className={styles.mediaItem}
+                        onClick={() => handleMediaClick(media)}
+                      />
+                    ) : (
+                      <video 
+                        src={media.media_url}
+                        controls
+                        className={styles.mediaItem}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            // Four or more media items
+            <div className={styles.multiMediaGrid}>
+              {post.media.slice(0, 4).map((media, index) => (
+                <div 
+                  key={index} 
+                  className={`${styles.mediaGridItem} ${
+                    index === 3 && post.media.length > 4 ? styles.hasMore : ''
+                  }`}
+                >
+                  {media.media_type === 'image' ? (
+                    <img 
+                      src={media.media_url} 
+                      alt="Post media"
+                      className={styles.mediaItem}
+                      onClick={() => handleMediaClick(media)}
+                    />
+                  ) : (
+                    <video 
+                      src={media.media_url}
+                      controls
+                      className={styles.mediaItem}
+                    />
+                  )}
+                  {index === 3 && post.media.length > 4 && (
+                    <div className={styles.moreMediaOverlay}>
+                      <span>+{post.media.length - 4}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Like/Dislike Stats */}
       {(likeCounts.likes > 0 || likeCounts.dislikes > 0) && (
@@ -240,6 +385,34 @@ export default function PostCard({ post, user, onPostDeleted }) {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Media Viewer Modal */}
+      {showMediaViewer && selectedMedia && (
+        <div className={styles.mediaViewerOverlay} onClick={closeMediaViewer}>
+          <div className={styles.mediaViewerContent} onClick={(e) => e.stopPropagation()}>
+            <button 
+              className={styles.mediaViewerClose}
+              onClick={closeMediaViewer}
+            >
+              ✕
+            </button>
+            {selectedMedia.media_type === 'image' ? (
+              <img 
+                src={selectedMedia.media_url} 
+                alt="Full size media"
+                className={styles.mediaViewerImage}
+              />
+            ) : (
+              <video 
+                src={selectedMedia.media_url}
+                controls
+                autoPlay
+                className={styles.mediaViewerVideo}
+              />
+            )}
           </div>
         </div>
       )}

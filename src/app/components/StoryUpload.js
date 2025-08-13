@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import styles from './stories.module.css'
 
 export default function StoryUpload({ isOpen, onClose, onStoryCreated, currentUser }) {
@@ -142,11 +142,11 @@ export default function StoryUpload({ isOpen, onClose, onStoryCreated, currentUs
   const uploadFile = async (mediaFile) => {
     try {
       // Get the logged-in Supabase user ID directly from Auth
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData?.user) {
+      const session = await getCurrentSession();
+      if (!session?.user) {
         throw new Error("User not logged in");
       }
-      const userId = userData.user.id;
+      const userId = session.user.id;
   
       // Generate unique filename: userId/UNIQUE-RANDOM.ext
       const fileExt = mediaFile.file.name.split('.').pop();

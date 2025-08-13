@@ -1,28 +1,67 @@
 "use client"
 import { useState } from "react"
 import { supabase } from "../../../../lib/supabaseCLient"
+import MediaUploader from "../../components/MediaUploader"
+import FeelingActivitySelector from "../../components/FeelingActivitySelector"
 import styles from "../feed.module.css"
 
 export default function CreatePost({ user, onPostCreated }) {
   const [content, setContent] = useState("")
   const [error, setError] = useState(null)
   const [showPostForm, setShowPostForm] = useState(false)
+  const [uploadedMedia, setUploadedMedia] = useState([])
+  const [feelingActivity, setFeelingActivity] = useState({ type: null, value: null, emoji: null })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showMediaUploader, setShowMediaUploader] = useState(false)
 
   async function handlePost(e) {
     e.preventDefault()
     setError(null)
-    if (!content.trim()) return
+    if (!content.trim() && uploadedMedia.length === 0) {
+      setError("Please add some content or media")
+      return
+    }
+    
+    setIsSubmitting(true)
     
     try {
-      const { error } = await supabase.from("posts").insert([{ content, user_id: user.id }])
-      if (error) setError(error.message)
-      else {
+      // Prepare post data
+      const postData = {
+        content: content.trim(),
+        media: uploadedMedia,
+        feeling: feelingActivity.type === 'feeling' ? feelingActivity.value : null,
+        activity: feelingActivity.type === 'activity' ? feelingActivity.value : null
+      }
+
+      // attach access token so API can authenticate
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify(postData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        // Reset form
         setContent("")
+        setUploadedMedia([])
+        setFeelingActivity({ type: null, value: null, emoji: null })
         setShowPostForm(false)
+        setShowMediaUploader(false)
         onPostCreated() // Call the callback to refresh posts
+      } else {
+        setError(result.error || "Failed to create post")
       }
     } catch (err) {
+      console.error('Post creation error:', err)
       setError("Failed to create post")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -30,6 +69,17 @@ export default function CreatePost({ user, onPostCreated }) {
     setShowPostForm(false)
     setContent("")
     setError(null)
+    setUploadedMedia([])
+    setFeelingActivity({ type: null, value: null, emoji: null })
+    setShowMediaUploader(false)
+  }
+
+  const handleMediaChange = (mediaFiles) => {
+    setUploadedMedia(mediaFiles)
+  }
+
+  const handleFeelingActivityChange = (selection) => {
+    setFeelingActivity(selection)
   }
 
   return (
@@ -48,13 +98,19 @@ export default function CreatePost({ user, onPostCreated }) {
           </button>
         </div>
         <div className={styles.createPostActions}>
-          <button className={styles.postAction}>
-            📹 Live Video
-          </button>
-          <button className={styles.postAction}>
+          <button 
+            className={styles.postAction}
+            onClick={() => {
+              setShowPostForm(true)
+              setShowMediaUploader(true)
+            }}
+          >
             📷 Photo/Video
           </button>
-          <button className={styles.postAction}>
+          <button 
+            className={styles.postAction}
+            onClick={() => setShowPostForm(true)}
+          >
             😊 Feeling/Activity
           </button>
         </div>
@@ -83,22 +139,116 @@ export default function CreatePost({ user, onPostCreated }) {
               </button>
             </div>
             <form onSubmit={handlePost}>
+              {/* User Info with Feeling/Activity */}
+              <div className={styles.postUserHeader}>
+                <div className={styles.postUserInfo}>
+                  <div className={styles.userAvatar}>
+                    {user?.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className={styles.userDetails}>
+                    <div className={styles.userName}>
+                      {user?.username || user?.email?.split('@')[0] || 'User'}
+                    </div>
+                    {feelingActivity.value && (
+                      <div className={styles.feelingDisplay}>
+                        {feelingActivity.emoji} {feelingActivity.type === 'feeling' ? 'is feeling' : 'is'} {feelingActivity.value}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <textarea
                 placeholder="What&apos;s on your mind?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className={styles.postTextarea}
-                required
               />
+
+              {/* Feeling/Activity Selector */}
+              <div className={styles.postOption}>
+                <FeelingActivitySelector 
+                  onSelectionChange={handleFeelingActivityChange}
+                  initialSelection={feelingActivity}
+                />
+              </div>
+
+              {/* Media Uploader */}
+              {showMediaUploader && (
+                <div className={styles.postOption}>
+                  <MediaUploader 
+                    onMediaChange={handleMediaChange}
+                    maxFiles={10}
+                  />
+                </div>
+              )}
+
+              {/* Show Media Toggle Button */}
+              {!showMediaUploader && (
+                <div className={styles.postOption}>
+                  <button
+                    type="button"
+                    className={styles.addMediaBtn}
+                    onClick={() => setShowMediaUploader(true)}
+                  >
+                    📷 Add Photos/Videos
+                  </button>
+                </div>
+              )}
+
+              {/* Media Preview */}
+              {uploadedMedia.length > 0 && (
+                <div className={styles.mediaPreview}>
+                  <div className={styles.mediaPreviewHeader}>
+                    <span>{uploadedMedia.length} file(s) uploaded</span>
+                    <button
+                      type="button"
+                      className={styles.removeMediaBtn}
+                      onClick={() => {
+                        setUploadedMedia([])
+                        setShowMediaUploader(false)
+                      }}
+                    >
+                      Remove All
+                    </button>
+                  </div>
+                  <div className={styles.mediaPreviewGrid}>
+                    {uploadedMedia.slice(0, 4).map((media, index) => (
+                      <div key={index} className={styles.mediaPreviewItem}>
+                        {media.type === 'image' ? (
+                          <img src={media.url} alt="Preview" />
+                        ) : (
+                          <div className={styles.videoPreviewItem}>
+                            <video src={media.url} />
+                            <span className={styles.videoIcon}>▶️</span>
+                          </div>
+                        )}
+                        {uploadedMedia.length > 4 && index === 3 && (
+                          <div className={styles.moreMediaOverlay}>
+                            +{uploadedMedia.length - 4}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {error && <p className={styles.error}>{error}</p>}
+              
               <div className={styles.postFormActions}>
-                <button type="submit" className={styles.postSubmitBtn}>
-                  Post
+                <button 
+                  type="submit" 
+                  className={styles.postSubmitBtn}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Posting...' : 'Post'}
                 </button>
                 <button 
                   type="button" 
                   className={styles.postCancelBtn}
                   onClick={closeModal}
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </button>

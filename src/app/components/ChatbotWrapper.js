@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { supabase } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import Chatbot from "./Chatbot"
 
 export default function ChatbotWrapper() {
@@ -29,8 +29,8 @@ export default function ChatbotWrapper() {
 
   async function getUser() {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      const session = await getCurrentSession()
+      setUser(session?.user || null)
     } catch (error) {
       console.error("Error getting user:", error)
     } finally {

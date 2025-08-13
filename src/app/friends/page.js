@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { supabase, getFriends, getFriendRequests, searchUsers, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getFriendStatus } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession, getFriends, getFriendRequests, searchUsers, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getFriendStatus } from "../../../lib/supabaseCLient"
 import styles from "./friends.module.css"
 
 export default function FriendsPage() {
@@ -26,11 +26,11 @@ export default function FriendsPage() {
   }, [user, activeTab])
 
   async function getUser() {
-    const { data } = await supabase.auth.getUser()
-    if (!data.user) {
+    const session = await getCurrentSession()
+    if (!session?.user) {
       router.push("/login")
     } else {
-      setUser(data.user)
+      setUser(session.user)
     }
   }
 

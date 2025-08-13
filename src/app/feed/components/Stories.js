@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '../../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../../lib/supabaseCLient'
 import StoriesFeed from '../../components/StoriesFeed'
 import { useStories } from '../../context/StoriesContext'
 
@@ -12,19 +12,19 @@ export default function Stories() {
 
   const getCurrentUser = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const session = await getCurrentSession()
       
-      if (user) {
+      if (session?.user) {
         // Get user profile
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', session.user.id)
           .single()
         
         const userData = {
-          id: user.id,
-          email: user.email,
+          id: session.user.id,
+          email: session.user.email,
           username: profile?.username,
           full_name: profile?.full_name,
           avatar_url: profile?.avatar_url

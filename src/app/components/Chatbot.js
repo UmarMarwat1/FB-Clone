@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
-import { supabase } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import ConversationList from "./ConversationList"
 import styles from "./chatbot.module.css"
 
@@ -73,8 +73,8 @@ export default function Chatbot({ user }) {
     setIsLoading(true)
 
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -129,8 +129,8 @@ export default function Chatbot({ user }) {
     try {
       console.log("Loading messages for conversation:", conversationId)
       
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch(`/api/messages?conversationId=${conversationId}`, {
         headers: {
@@ -168,8 +168,8 @@ export default function Chatbot({ user }) {
 
   const createNewConversation = async () => {
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch('/api/conversations', {
         method: 'POST',
@@ -206,8 +206,8 @@ export default function Chatbot({ user }) {
       
       console.log("Attempting to delete message:", messageId)
       
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       // Find the message to be deleted
       const messageToDelete = messages.find(msg => msg.id === messageId)
@@ -285,8 +285,8 @@ export default function Chatbot({ user }) {
       
       console.log("Attempting to update message:", messageId, "with content:", newContent)
       
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch(`/api/messages/${messageId}`, {
         method: 'PUT',

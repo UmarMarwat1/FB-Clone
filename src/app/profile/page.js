@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase, getProfile, updateProfile } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession, getProfile, updateProfile } from "../../../lib/supabaseCLient"
 import styles from "./profile.module.css";
 
 export default function ProfilePage() {
@@ -14,14 +14,14 @@ export default function ProfilePage() {
     async function fetchProfile() {
       setLoading(true);
       setError("");
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const session = await getCurrentSession();
+      if (!session?.user) {
         setError("User not logged in");
         setLoading(false);
         return;
       }
       try {
-        const data = await getProfile(user.id);
+        const data = await getProfile(session.user.id);
         setProfile({
           username: data.username || "",
           full_name: data.full_name || "",
@@ -44,14 +44,14 @@ export default function ProfilePage() {
     setError("");
     setSuccess("");
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const session = await getCurrentSession();
+    if (!session?.user) {
       setError("User not logged in");
       setLoading(false);
       return;
     }
     try {
-      await updateProfile(user.id, profile);
+      await updateProfile(session.user.id, profile);
       setSuccess("Profile updated successfully!");
       setEditing(false);
     } catch (err) {

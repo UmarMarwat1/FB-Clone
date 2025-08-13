@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "../../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../../lib/supabaseCLient"
 import styles from "../feed.module.css"
 
 export default function Header({ user, setUser }) {

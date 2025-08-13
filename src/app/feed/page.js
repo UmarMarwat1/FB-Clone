@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
 import Stories from "./components/Stories"
@@ -20,11 +20,11 @@ export default function FeedPage() {
   }, [])
 
   async function getUser() {
-    const { data } = await supabase.auth.getUser()
-    if (!data.user) {
+    const session = await getCurrentSession()
+    if (!session?.user) {
       router.push("/")
     } else {
-      setUser(data.user)
+      setUser(session.user)
     }
   }
 

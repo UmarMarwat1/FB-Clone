@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useCallback } from "react"
 import styles from "./chatbot.module.css"
-import { supabase } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 
 export default function ConversationList({ user, onSelectConversation, currentConversation, onRefresh }) {
   const [conversations, setConversations] = useState([])
@@ -13,8 +13,8 @@ export default function ConversationList({ user, onSelectConversation, currentCo
     if (!user?.id) return
     
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch(`/api/conversations?userId=${user.id}`, {
         headers: {
@@ -39,8 +39,8 @@ export default function ConversationList({ user, onSelectConversation, currentCo
 
   const createNewConversation = async () => {
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       const response = await fetch('/api/conversations', {
         method: 'POST',
@@ -66,8 +66,8 @@ export default function ConversationList({ user, onSelectConversation, currentCo
 
   const deleteConversation = async (conversationId) => {
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       await fetch(`/api/conversations/${conversationId}`, {
         method: 'DELETE',
@@ -86,8 +86,8 @@ export default function ConversationList({ user, onSelectConversation, currentCo
 
   const updateConversationTitle = async (conversationId, newTitle) => {
     try {
-      // Get user session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      // Get user session for authentication with refresh fallback
+      const session = await getCurrentSession()
       
       await fetch(`/api/conversations/${conversationId}`, {
         method: 'PUT',

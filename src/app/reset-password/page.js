@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import { supabase } from "../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import { useRouter } from "next/navigation"
 import styles from "./resetPassword.module.css"
 
@@ -15,8 +15,8 @@ export default function ResetPassword() {
   useEffect(() => {
     // Check if user is authenticated
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      const session = await getCurrentSession()
+      if (!session?.user) {
         router.push('/login')
       }
     }

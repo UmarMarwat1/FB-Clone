@@ -14,48 +14,32 @@ export default function PostsFeed({ user }) {
 
   async function fetchPosts() {
     try {
-      // First get the current user's friends
-      const friends = await getFriends(user.id)
-      const friendIds = friends.map(friendship => 
-        friendship.user1_id === user.id ? friendship.user2_id : friendship.user1_id
-      )
+      // Use the new API route that handles posts with media
+      const response = await fetch('/api/posts')
+      const result = await response.json()
       
-      // Add current user to the list so they can see their own posts
-      friendIds.push(user.id)
-      
-      // Fetch posts only from friends (including user's own posts)
-      let { data, error } = await supabase
-        .from("posts")
-        .select("id, content, created_at, user_id")
-        .in("user_id", friendIds)
-        .order("created_at", { ascending: false })
-      
-      if (error) {
-        setError(error.message)
-        return
-      }
-      
-      // Get user profiles for all post authors
-      if (data) {
-        const userIds = [...new Set(data.map(post => post.user_id))];
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, username, full_name")
-          .in("id", userIds);
+      if (result.posts) {
+        // Filter posts to show only user's and friends' posts
+        const friends = await getFriends(user.id)
+        const friendIds = friends.map(friendship => 
+          friendship.user1_id === user.id ? friendship.user2_id : friendship.user1_id
+        )
         
-        // Combine posts with user profiles
-        const postsWithProfiles = data.map(post => ({
-          ...post,
-          author: profiles?.find(profile => profile.id === post.user_id)
-        }));
+        // Add current user to the list so they can see their own posts
+        friendIds.push(user.id)
         
-        setPosts(postsWithProfiles || [])
+        // Filter posts to show only from friends and user
+        const filteredPosts = result.posts.filter(post => 
+          friendIds.includes(post.user_id)
+        )
+        
+        setPosts(filteredPosts || [])
       } else {
-        setPosts([])
+        setError("Failed to fetch posts")
       }
     } catch (err) {
-      setError('Failed to fetch posts')
-      console.error(err)
+      console.error('Error fetching posts:', err)
+      setError("Failed to fetch posts")
     }
   }
 

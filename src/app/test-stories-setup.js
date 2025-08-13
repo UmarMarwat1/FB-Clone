@@ -1,7 +1,7 @@
 // Simple script to test stories database setup
 // Run this in browser console to debug database issues
 
-import { supabase } from '../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../lib/supabaseCLient'
 
 export async function testStoriesSetup() {
   console.log('Testing Stories Database Setup...')
@@ -29,12 +29,12 @@ export async function testStoriesSetup() {
     }
 
     // Test current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    if (userError) {
-      results.errors.push(`User auth: ${userError.message}`)
+    const session = await getCurrentSession()
+    if (!session?.user) {
+      results.errors.push(`User auth: No authenticated user`)
     } else {
-      results.user = user
-      console.log('✅ User authenticated:', user?.email)
+      results.user = session.user
+      console.log('✅ User authenticated:', session.user?.email)
     }
 
     // Test each table
