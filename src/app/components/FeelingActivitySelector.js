@@ -200,7 +200,7 @@ export default function FeelingActivitySelector({ onSelectionChange, initialSele
               (activeTab === 'activities' && filteredActivities.length === 0)
             ) && (
               <div className={styles.noResults}>
-                <p>No {activeTab} found for "{searchTerm}"</p>
+                <p>No {activeTab} found for &quot;{searchTerm}&quot;</p>
               </div>
             )}
           </div>
