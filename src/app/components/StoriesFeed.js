@@ -294,6 +294,12 @@ export default function StoriesFeed({ currentUser }) {
          <div 
            className={styles.storiesContainer}
            onScroll={checkScrollArrows}
+           style={{
+             WebkitOverflowScrolling: 'touch',
+             touchAction: 'pan-x',
+             overflowX: 'auto',
+             scrollBehavior: 'smooth'
+           }}
          >
            {/* Add Story Button */}
            <div 

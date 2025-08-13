@@ -8,6 +8,13 @@
   margin-bottom: 16px;
   box-shadow: none;
   position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .storiesSection {
+    overflow: visible !important;
+  }
 }
 
 /* Beautiful Loading Stories Section */
@@ -122,6 +129,8 @@
   -ms-overflow-style: none;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 
 .storiesContainer::-webkit-scrollbar {
@@ -725,10 +734,32 @@
   .storiesContainer {
     padding: 0 12px;
     gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .storiesContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide navigation arrows on mobile */
+  .navArrow {
+    display: none !important;
   }
 
   .storyItem {
     width: 90px;
+    flex: 0 0 90px;
+    scroll-snap-align: start;
+    min-width: 90px;
   }
 
   .storyImage {
@@ -786,10 +817,32 @@
   .storiesContainer {
     padding: 0 8px;
     gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .storiesContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide navigation arrows on mobile */
+  .navArrow {
+    display: none !important;
   }
 
   .storyItem {
     width: 80px;
+    flex: 0 0 80px;
+    scroll-snap-align: start;
+    min-width: 80px;
   }
 
   .storyImage {
@@ -819,6 +872,45 @@
   .storyText {
     font-size: 14px;
     bottom: 40px;
+  }
+}
+
+/* Additional mobile touch support */
+@media (max-width: 768px) {
+  .storiesContainer {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    scroll-behavior: smooth !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  .storyItem {
+    flex: 0 0 90px !important;
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .storiesContainer {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    scroll-behavior: smooth !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  .storyItem {
+    flex: 0 0 80px !important;
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
   }
 }
 
