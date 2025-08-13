@@ -1,6 +1,14 @@
 import { supabase } from "../../../../../lib/supabaseCLient"
 import { createClient } from '@supabase/supabase-js'
 
+// Configure for large file uploads
+export const config = {
+  api: {
+    bodyParser: false, // Disable default body parser for file uploads
+    responseLimit: false,
+  },
+}
+
 export async function POST(request) {
   try {
     const formData = await request.formData()
@@ -19,6 +27,25 @@ export async function POST(request) {
 
     if (!file) {
       return Response.json({ error: "No file provided" }, { status: 400 })
+    }
+
+    // Validate file size (max 50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      return Response.json({ 
+        error: `File ${file.name} is too large. Maximum size is 50MB` 
+      }, { status: 400 })
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'
+    ]
+    
+    if (!allowedTypes.includes(file.type)) {
+      return Response.json({ 
+        error: `File ${file.name} has invalid type. Allowed: images and videos` 
+      }, { status: 400 })
     }
 
     // Create authenticated Supabase client

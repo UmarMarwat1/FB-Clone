@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Configure for large file uploads
+export const config = {
+  api: {
+    bodyParser: false, // Disable default body parser for file uploads
+    responseLimit: false,
+  },
+}
+
 // Create server-side Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY

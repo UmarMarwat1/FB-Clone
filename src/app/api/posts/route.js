@@ -83,9 +83,17 @@ export async function POST(request) {
     const body = await request.json()
     const { content, media = [], feeling = null, activity = null } = body
 
-    // Validate content
-    if (!content || !content.trim()) {
-      return NextResponse.json({ error: 'Post content is required' }, { status: 400 })
+    // Validate content - allow posts with just media or content, but not empty posts
+    const hasContent = content && content.trim().length > 0
+    const hasMedia = media && media.length > 0
+    const hasFeelingOrActivity = feeling || activity
+    
+    if (!hasContent && !hasMedia && !hasFeelingOrActivity) {
+      return NextResponse.json({ error: 'Post must have content, media, or feeling/activity' }, { status: 400 })
+    }
+    
+    if (!hasContent && !hasMedia && hasFeelingOrActivity) {
+      return NextResponse.json({ error: 'Feelings/Activities cannot be posted alone. Please add some content or media' }, { status: 400 })
     }
 
     const userId = user.id
@@ -95,7 +103,7 @@ export async function POST(request) {
       .from('posts')
       .insert([{
         user_id: userId,
-        content: content.trim(),
+        content: hasContent ? content.trim() : null, // Allow null content for media-only posts
         feeling,
         activity,
         media_count: media.length

@@ -17,8 +17,21 @@ export default function CreatePost({ user, onPostCreated }) {
   async function handlePost(e) {
     e.preventDefault()
     setError(null)
-    if (!content.trim() && uploadedMedia.length === 0) {
-      setError("Please add some content or media")
+    
+    // New validation logic:
+    // Allow: text only, media only, text+media, media+feelings, text+feelings
+    // Prevent: feelings/activities only (must have text or media)
+    const hasContent = content.trim().length > 0
+    const hasMedia = uploadedMedia.length > 0
+    const hasFeelingActivity = feelingActivity.value !== null
+    
+    if (!hasContent && !hasMedia && !hasFeelingActivity) {
+      setError("Please add some content, media, or select a feeling/activity")
+      return
+    }
+    
+    if (!hasContent && !hasMedia && hasFeelingActivity) {
+      setError("Feelings/Activities cannot be posted alone. Please add some text or media")
       return
     }
     
@@ -27,7 +40,7 @@ export default function CreatePost({ user, onPostCreated }) {
     try {
       // Prepare post data
       const postData = {
-        content: content.trim(),
+        content: hasContent ? content.trim() : null, // Send null for empty content
         media: uploadedMedia,
         feeling: feelingActivity.type === 'feeling' ? feelingActivity.value : null,
         activity: feelingActivity.type === 'activity' ? feelingActivity.value : null
@@ -97,23 +110,7 @@ export default function CreatePost({ user, onPostCreated }) {
             What&apos;s on your mind?
           </button>
         </div>
-        <div className={styles.createPostActions}>
-          <button 
-            className={styles.postAction}
-            onClick={() => {
-              setShowPostForm(true)
-              setShowMediaUploader(true)
-            }}
-          >
-            📷 Photo/Video
-          </button>
-          <button 
-            className={styles.postAction}
-            onClick={() => setShowPostForm(true)}
-          >
-            😊 Feeling/Activity
-          </button>
-        </div>
+        {/* Removed createPostActions - Photo/Video and Feeling/Activity options now only appear in the modal */}
       </div>
 
       {/* Post Form Modal */}

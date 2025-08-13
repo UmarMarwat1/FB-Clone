@@ -96,16 +96,23 @@ export default function FeelingActivitySelector({ onSelectionChange, initialSele
           )}
         </span>
         {selection.value && (
-          <button
-            type="button"
+          <span
             className={styles.clearBtn}
             onClick={(e) => {
               e.stopPropagation()
               clearSelection()
             }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                clearSelection()
+              }
+            }}
           >
             ✕
-          </button>
+          </span>
         )}
       </button>
 

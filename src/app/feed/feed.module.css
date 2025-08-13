@@ -247,14 +247,14 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   z-index: 1;
   position: relative;
-  height: 50vmin;
+  /* Removed fixed height - now auto-sized based on content */
 }
 
 .createPostHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  /* Removed margin-bottom since there's no actions section below */
 }
 
 .userAvatar {
@@ -280,13 +280,15 @@
   color: #65676b;
   cursor: pointer;
   text-align: left;
+  transition: background 0.2s;
 }
 
 .createPostInput:hover {
   background: #e4e6eb;
 }
 
-.createPostActions {
+/* Removed createPostActions styles - no longer used since actions are only in modal */
+/* .createPostActions {
   display: flex;
   gap: 8px;
   border-top: 1px solid #f0f2f5;
@@ -307,7 +309,7 @@
 
 .postAction:hover {
   background: #f0f2f5;
-}
+} */
 
 /* Post Form Overlay */
 .postFormOverlay {
@@ -1049,7 +1051,8 @@
     font-size: 12px;
   }
   
-  .createPostActions {
+  /* Removed createPostActions responsive styles - no longer used */
+  /* .createPostActions {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
@@ -1059,7 +1062,7 @@
     text-align: center;
     padding: 8px 6px;
     font-size: 13px;
-  }
+  } */
   
   .postUserAvatar {
     width: 36px;
@@ -1220,7 +1223,8 @@
     padding: 8px 12px;
   }
   
-  .createPostActions {
+  /* Removed createPostActions responsive styles - no longer used */
+  /* .createPostActions {
     flex-direction: row;
     gap: 6px;
   }
@@ -1229,7 +1233,7 @@
     text-align: center;
     padding: 6px 8px;
     font-size: 12px;
-  }
+  } */
   
   .postUserAvatar {
     width: 32px;
@@ -1439,7 +1443,8 @@
     padding: 6px 10px;
   }
   
-  .createPostActions {
+  /* Removed createPostActions responsive styles - no longer used */
+  /* .createPostActions {
     flex-direction: row;
     gap: 4px;
   }
@@ -1448,7 +1453,7 @@
     text-align: center;
     padding: 5px 6px;
     font-size: 11px;
-  }
+  } */
   
   .postUserAvatar {
     width: 28px;
@@ -1650,7 +1655,8 @@
     padding: 5px 8px;
   }
   
-  .createPostActions {
+  /* Removed createPostActions responsive styles - no longer used */
+  /* .createPostActions {
     flex-direction: row;
     gap: 3px;
     padding: 30px 15px;
@@ -1660,7 +1666,7 @@
     text-align: center;
     padding: 4px 5px;
     font-size: 10px;
-  }
+  } */
   
   .postUserAvatar {
     width: 40px;

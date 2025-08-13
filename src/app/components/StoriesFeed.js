@@ -18,7 +18,7 @@ export default function StoriesFeed({ currentUser }) {
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(false)
 
-  // Fetch stories on component mount if currentUser is available
+  // Fetch stories automatically when component mounts
   useEffect(() => {
     if (currentUser) {
       fetchStories()
@@ -301,11 +301,11 @@ export default function StoriesFeed({ currentUser }) {
              scrollBehavior: 'smooth'
            }}
          >
-           {/* Add Story Button */}
-           <div 
-             className={`${styles.storyItem} ${styles.addStory}`}
-             onClick={() => setShowUpload(true)}
-           >
+                     {/* Add Story Button */}
+          <div 
+            className={`${styles.storyItem} ${styles.addStory}`}
+            onClick={() => setShowUpload(true)}
+          >
              <div className={styles.storyImage}>
                              {/* Show user&apos;s profile picture or default avatar */}
               <img 
@@ -320,46 +320,46 @@ export default function StoriesFeed({ currentUser }) {
              <span className={styles.storyName}>Create story</span>
            </div>
 
-                     {/* Stories from friends and user */}
-           {groupedStories.map((group, index) => (
-             <div 
-               key={`${group.user_id}-${index}`}
-               className={styles.storyItem}
-             >
-                                                              <div 
-                 className={styles.storyImage}
-                 onClick={() => handleGroupClick(group)}
-               >
-                 <img 
-                   src={group.preview_image} 
-                   alt={group.full_name || group.username}
-                   onError={(e) => {
-                     e.target.src = group.avatar_url || '/default-avatar.svg'
-                   }}
-                  />
-                 
-                                    {/* Profile picture overlay */}
-                  <div className={styles.storyProfilePic}>
-                    <img 
-                      src={group.avatar_url || '/default-avatar.svg'}
-                      alt={group.full_name || group.username}
-                      onError={(e) => {
-                        e.target.src = '/default-avatar.svg'
-                      }}
-                    />
-                  </div>
-              </div>
-               <span className={styles.storyName}>
-                 {group.is_own_story ? 'Your Story' : (group.full_name || group.username)}
-               </span>
+                               {/* Stories from friends and user */}
+          {groupedStories.map((group, index) => (
+            <div 
+              key={`${group.user_id}-${index}`}
+              className={styles.storyItem}
+            >
+              <div 
+                className={styles.storyImage}
+                onClick={() => handleGroupClick(group)}
+              >
+                <img 
+                  src={group.preview_image} 
+                  alt={group.full_name || group.username}
+                  onError={(e) => {
+                    e.target.src = group.avatar_url || '/default-avatar.svg'
+                  }}
+                 />
+                
+                {/* Profile picture overlay */}
+                 <div className={styles.storyProfilePic}>
+                   <img 
+                     src={group.avatar_url || '/default-avatar.svg'}
+                     alt={group.full_name || group.username}
+                     onError={(e) => {
+                       e.target.src = '/default-avatar.svg'
+                     }}
+                   />
+                 </div>
              </div>
-           ))}
+              <span className={styles.storyName}>
+                {group.is_own_story ? 'Your Story' : (group.full_name || group.username)}
+              </span>
+            </div>
+          ))}
 
-                     {groupedStories.length === 0 && (
-             <div style={{ padding: '20px', color: '#65676b' }}>
-               No stories to show. Be the first to share a story!
-             </div>
-           )}
+          {groupedStories.length === 0 && (
+            <div style={{ padding: '20px', color: '#65676b' }}>
+              No stories to show. Be the first to share a story!
+            </div>
+          )}
          </div>
 
          {/* Right Navigation Arrow */}

@@ -6,6 +6,7 @@ import styles from './mediaUploader.module.css'
 export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [previews, setPreviews] = useState([])
+  const [uploadedFiles, setUploadedFiles] = useState([]) // Track already uploaded files
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState({})
@@ -14,9 +15,9 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
   const handleFiles = (files) => {
     const fileArray = Array.from(files)
     
-    // Validate file count
-    if (selectedFiles.length + fileArray.length > maxFiles) {
-      alert(`Maximum ${maxFiles} files allowed`)
+    // Validate file count (including already uploaded files)
+    if (uploadedFiles.length + selectedFiles.length + fileArray.length > maxFiles) {
+      alert(`Maximum ${maxFiles} files allowed. You already have ${uploadedFiles.length} uploaded files.`)
       return
     }
 
@@ -60,7 +61,12 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
         
         // Update state when all previews are loaded
         if (newPreviews.length === validFiles.length) {
-          setSelectedFiles(prev => [...prev, ...validFiles])
+          setSelectedFiles(prev => {
+            const updatedFiles = [...prev, ...validFiles]
+            // Auto-upload files after setting state
+            setTimeout(() => uploadFilesAutomatic(updatedFiles), 100)
+            return updatedFiles
+          })
           setPreviews(prev => [...prev, ...newPreviews])
         }
       }
@@ -97,21 +103,28 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
   }
 
   const removeFile = (indexToRemove) => {
+    // Remove from selected files (not yet uploaded)
     const newFiles = selectedFiles.filter((_, index) => index !== indexToRemove)
     const newPreviews = previews.filter((_, index) => index !== indexToRemove)
     
     setSelectedFiles(newFiles)
     setPreviews(newPreviews)
-    onMediaChange([])
   }
 
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return
+  const removeUploadedFile = (indexToRemove) => {
+    // Remove from uploaded files
+    const newUploadedFiles = uploadedFiles.filter((_, index) => index !== indexToRemove)
+    setUploadedFiles(newUploadedFiles)
+    onMediaChange(newUploadedFiles)
+  }
+
+  const uploadFilesAutomatic = async (filesToUpload = selectedFiles) => {
+    if (filesToUpload.length === 0) return
 
     setUploading(true)
     const formData = new FormData()
     
-    selectedFiles.forEach((file) => {
+    filesToUpload.forEach((file) => {
       formData.append('files', file)
     })
 
@@ -121,6 +134,7 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
       
       if (!session) {
         alert('Please log in to upload files')
+        setUploading(false)
         return
       }
 
@@ -135,9 +149,16 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
       const result = await response.json()
 
       if (result.success) {
-        onMediaChange(result.files)
+        // Add new uploaded files to existing ones
+        const newUploadedFiles = [...uploadedFiles, ...result.files]
+        setUploadedFiles(newUploadedFiles)
+        onMediaChange(newUploadedFiles)
         setSelectedFiles([])
         setPreviews([])
+        // Clear the file input so it can be used again
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
       } else {
         alert(result.error || 'Upload failed')
       }
@@ -148,6 +169,9 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
       setUploading(false)
     }
   }
+
+  // Keep the manual upload function for backward compatibility
+  const uploadFiles = () => uploadFilesAutomatic()
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes'
@@ -177,6 +201,8 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
           </button>
           <p className={styles.fileInfo}>
             Support: JPG, PNG, GIF, MP4, WebM (Max: {maxFiles} files, 50MB each)
+            <br />
+            <small>✨ Files upload automatically when selected</small>
           </p>
         </div>
       </div>
@@ -190,20 +216,73 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
         style={{ display: 'none' }}
       />
 
-      {/* File Previews */}
+      {/* Uploaded Files */}
+      {uploadedFiles.length > 0 && (
+        <div className={styles.previewContainer}>
+          <div className={styles.previewHeader}>
+            <h4>Uploaded Files ({uploadedFiles.length}/{maxFiles})</h4>
+            <button
+              type="button"
+              className={styles.removeMediaBtn}
+              onClick={() => {
+                setUploadedFiles([])
+                onMediaChange([])
+              }}
+            >
+              Remove All
+            </button>
+          </div>
+
+          <div className={styles.previewGrid}>
+            {uploadedFiles.map((file, index) => (
+              <div key={index} className={styles.previewItem}>
+                <div className={styles.previewMedia}>
+                  {file.type === 'image' ? (
+                    <img 
+                      src={file.url} 
+                      alt={file.name}
+                      className={styles.previewImage}
+                    />
+                  ) : (
+                    <div className={styles.videoPreview}>
+                      <video 
+                        src={file.url}
+                        className={styles.previewVideo}
+                        controls={false}
+                        muted
+                      />
+                      <div className={styles.videoOverlay}>
+                        <span className={styles.playIcon}>▶️</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <button
+                    type="button"
+                    className={styles.removeBtn}
+                    onClick={() => removeUploadedFile(index)}
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className={styles.fileInfo}>
+                  <p className={styles.fileName}>{file.name}</p>
+                  <p className={styles.fileSize}>{formatFileSize(file.size)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Files Being Selected/Uploaded */}
       {previews.length > 0 && (
         <div className={styles.previewContainer}>
           <div className={styles.previewHeader}>
-            <h4>Selected Files ({previews.length}/{maxFiles})</h4>
-            {!uploading && (
-              <button 
-                type="button"
-                className={styles.uploadBtn}
-                onClick={uploadFiles}
-              >
-                Upload Files
-              </button>
-            )}
+            <h4>
+              {uploading ? 'Uploading...' : 'Selected Files'} ({previews.length})
+            </h4>
           </div>
 
           <div className={styles.previewGrid}>

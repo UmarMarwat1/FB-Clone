@@ -29,12 +29,14 @@ export async function POST(request) {
       )
     }
 
-    // Create the story
+    // Create the story (expires_at will be set automatically by database trigger)
+    console.log("Creating story for user:", userId)
     const { data: storyData, error: storyError } = await supabaseAuth
       .from('stories')
       .insert({
         user_id: userId,
         text_content: textContent || null
+        // expires_at will be set automatically by database trigger to NOW() + 24 hours
       })
       .select()
       .single()
@@ -43,6 +45,11 @@ export async function POST(request) {
       console.error("Error creating story:", storyError)
       throw new Error("Failed to create story")
     }
+
+    console.log("Story created successfully:", storyData)
+    console.log("Story expires at:", storyData.expires_at)
+    console.log("Story created at:", storyData.created_at)
+    console.log("Story is_active:", storyData.is_active)
 
     // If there are media files, insert them
     if (mediaFiles && mediaFiles.length > 0) {
@@ -105,8 +112,8 @@ export async function GET(request) {
       )
     }
 
-    // Fetch active stories from friends and user
-    const { data: stories, error: storiesError } = await supabaseAuth
+    // Fetch active stories from friends and user (including those without expires_at for backwards compatibility)
+    const { data: allStories, error: storiesError } = await supabaseAuth
       .from('stories')
       .select(`
         *,
@@ -124,7 +131,6 @@ export async function GET(request) {
           full_name
         )
       `)
-      .gt('expires_at', new Date().toISOString())
       .eq('is_active', true)
       .order('created_at', { ascending: false })
 
@@ -132,6 +138,13 @@ export async function GET(request) {
       console.error("Error fetching stories:", storiesError)
       throw new Error("Failed to fetch stories")
     }
+
+    // Filter expired stories client-side to handle missing expires_at fields
+    const now = new Date().toISOString()
+    const stories = allStories?.filter(story => {
+      if (!story.expires_at) return true // Keep stories without expiration date
+      return new Date(story.expires_at) > new Date(now)
+    }) || []
 
     // Sort media by order for each story
     const storiesWithSortedMedia = stories?.map(story => ({

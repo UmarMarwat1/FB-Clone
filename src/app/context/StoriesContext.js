@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useRef } from 'react'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getFriends } from '../../../lib/supabaseCLient'
 import { checkDatabaseTables, checkStorageAccess } from '../utils/checkDatabase'
 
 const StoriesContext = createContext()
@@ -31,9 +31,17 @@ export function StoriesProvider({ children }) {
     if (!storiesData || storiesData.length === 0) return storiesData
     
     const now = new Date().toISOString()
-    const validStories = storiesData.filter(story => 
-      story.expires_at && new Date(story.expires_at) > new Date(now)
-    )
+    
+    const validStories = storiesData.filter(story => {
+      // If story doesn't have expires_at field, keep it (backwards compatibility)
+      if (!story.expires_at) {
+        return true
+      }
+      
+      const storyExpiresAt = new Date(story.expires_at)
+      const currentTime = new Date(now)
+      return storyExpiresAt > currentTime
+    })
     
     if (validStories.length !== storiesData.length) {
       console.log(`Cleaned up ${storiesData.length - validStories.length} expired stories from cache`)
@@ -85,14 +93,66 @@ export function StoriesProvider({ children }) {
       if (!storageCheck.exists) {
         console.warn('Stories storage bucket not accessible:', storageCheck.error)
       }
+
+      // Check if user has friends or own stories before making API call
+      if (currentUser?.id) {
+        try {
+          // Check if user has any friends
+          const userFriends = await getFriends(currentUser.id)
+          
+          // Check if user has created any stories themselves
+          const { data: userStories, error: userStoriesError } = await supabase
+            .from('stories')
+            .select('id, expires_at')
+            .eq('user_id', currentUser.id)
+            .eq('is_active', true)
+            .limit(10) // Get a few to check expiration client-side
+          
+          // Filter out expired stories client-side to handle missing expires_at
+          const now = new Date().toISOString()
+          const validUserStories = userStories?.filter(story => {
+            if (!story.expires_at) return true // Keep stories without expiration date
+            return new Date(story.expires_at) > new Date(now)
+          }) || []
+
+          if (userStoriesError) {
+            console.warn('Error checking user stories:', userStoriesError)
+          }
+
+          // If user has no friends and no valid stories, return empty array
+          if ((!userFriends || userFriends.length === 0) && (!validUserStories || validUserStories.length === 0)) {
+            console.log('User has no friends and no stories, skipping stories fetch')
+            setStories([])
+            setLastFetchTime(Date.now())
+            return []
+          }
+
+          console.log(`User has ${userFriends?.length || 0} friends and ${validUserStories?.length || 0} valid stories`)
+        } catch (friendsError) {
+          console.warn('Error checking friends/stories:', friendsError)
+          // Continue with fetch if there's an error checking friends/stories
+        }
+      }
       
-      // Fetch stories
+      // Fetch stories (including those without expires_at for backwards compatibility)
       const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
         .select('*')
-        .gt('expires_at', new Date().toISOString())
         .eq('is_active', true)
         .order('created_at', { ascending: true })
+        
+      // Filter expired stories client-side to handle missing expires_at fields
+      const now = new Date().toISOString()
+      
+      const filteredStoriesData = storiesData?.filter(story => {
+        if (!story.expires_at) {
+          return true // Keep stories without expiration date
+        }
+        
+        const storyExpiresAt = new Date(story.expires_at)
+        const currentTime = new Date(now)
+        return storyExpiresAt > currentTime
+      }) || []
 
       if (storiesError) {
         console.error("Error fetching stories:", storiesError)
@@ -105,15 +165,15 @@ export function StoriesProvider({ children }) {
         throw new Error(`Database error: ${storiesError.message}`)
       }
 
-      console.log('Fetched stories:', storiesData)
+      console.log('Fetched stories:', filteredStoriesData)
 
       // If we have stories, fetch related data efficiently
       let storiesWithDetails = []
       
-      if (storiesData && storiesData.length > 0) {
+      if (filteredStoriesData && filteredStoriesData.length > 0) {
         try {
           // Get all unique user IDs from stories
-          const userIds = [...new Set(storiesData.map(story => story.user_id))]
+          const userIds = [...new Set(filteredStoriesData.map(story => story.user_id))]
           
           // Fetch all profiles in one query
           const { data: profiles, error: profilesError } = await supabase
@@ -132,7 +192,7 @@ export function StoriesProvider({ children }) {
           })
 
           // Fetch all story media in one query
-          const storyIds = storiesData.map(story => story.id)
+          const storyIds = filteredStoriesData.map(story => story.id)
           const { data: allStoryMedia, error: mediaError } = await supabase
             .from('story_media')
             .select('*')
@@ -153,7 +213,7 @@ export function StoriesProvider({ children }) {
           })
 
           // Combine all data
-          storiesWithDetails = storiesData.map(story => ({
+          storiesWithDetails = filteredStoriesData.map(story => ({
             ...story,
             story_media: storyMediaMap.get(story.id) || [],
             profiles: profileMap.get(story.user_id) || {
@@ -176,7 +236,7 @@ export function StoriesProvider({ children }) {
         } catch (detailError) {
           console.warn('Error fetching story details:', detailError)
           // Fallback: use stories without detailed info
-          storiesWithDetails = storiesData.map(story => ({
+          storiesWithDetails = filteredStoriesData.map(story => ({
             ...story,
             story_media: [],
             profiles: {
@@ -245,9 +305,9 @@ export function StoriesProvider({ children }) {
     setCurrentUser(newUser)
   }
 
-  // Periodic cache cleanup
+  // Periodic cache cleanup - re-enabled with longer interval
   useEffect(() => {
-    // Clean up expired stories every 2 minutes
+    // Clean up expired stories every 30 minutes (stories last 24h, so less frequent checks are fine)
     cleanupIntervalRef.current = setInterval(() => {
       if (stories.length > 0) {
         const cleanedStories = cleanupExpiredStories(stories)
@@ -256,7 +316,7 @@ export function StoriesProvider({ children }) {
           setStories(cleanedStories)
         }
       }
-    }, 2 * 60 * 1000) // 2 minutes
+    }, 30 * 60 * 1000) // 30 minutes
 
     return () => {
       if (cleanupIntervalRef.current) {
@@ -276,22 +336,23 @@ export function StoriesProvider({ children }) {
     }
   }, [])
 
-  // Cache cleanup on app visibility change
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log('App went to background, cleaning up cache')
-        // Clear cache when app goes to background to save memory
-        clearCache()
-      }
-    }
+  // Cache cleanup on app visibility change - REMOVED to fix disappearing stories
+  // The aggressive cache clearing was causing stories to disappear when users switched tabs
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.hidden) {
+  //       console.log('App went to background, cleaning up cache')
+  //       // Clear cache when app goes to background to save memory
+  //       clearCache()
+  //     }
+  //   }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
+  //   document.addEventListener('visibilitychange', handleVisibilityChange)
     
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, [])
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange)
+  //   }
+  // }, [])
 
   const value = {
     stories,

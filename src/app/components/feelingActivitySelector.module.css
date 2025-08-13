@@ -53,6 +53,8 @@
   align-items: center;
   justify-content: center;
   transition: background 0.3s ease;
+  user-select: none;
+  outline: none;
 }
 
 .clearBtn:hover {
