@@ -26,6 +26,9 @@ export function StoriesProvider({ children }) {
     return Date.now() - lastFetchTime < CACHE_DURATION
   }
 
+  // Guard to avoid overlapping fetches
+  const isFetchingRef = useRef(false)
+
   // Clean up expired stories from cache
   const cleanupExpiredStories = (storiesData) => {
     if (!storiesData || storiesData.length === 0) return storiesData
@@ -68,12 +71,99 @@ export function StoriesProvider({ children }) {
       return stories
     }
 
+    // Validate current user before attempting fetch
+    if (!currentUser || !currentUser.id) {
+      console.log('No valid user found, skipping stories fetch')
+      setStories([])
+      setLoading(false)
+      return []
+    }
+
+    if (isFetchingRef.current) {
+      return stories
+    }
+    isFetchingRef.current = true
     try {
       setLoading(true)
       setError(null)
+
+      // Reduce console noise in production; keep single concise log
+      console.log('Stories: evaluating fetch for user', currentUser?.id)
+
+      // 1) First determine if we should fetch stories at all (cheap checks only)
+      //    We do this BEFORE any broad stories query to avoid unnecessary fetches
+      let shouldFetchStories = false
+
+      if (currentUser?.id) {
+        try {
+          // Check if user has any friends with better error handling
+          let userFriends = []
+          try {
+            userFriends = await getFriends(currentUser.id)
+          } catch (friendsError) {
+            console.warn('Stories: friends check failed (likely none/new user)')
+            // If friends table doesn't exist or user has no friends, continue with stories check
+            userFriends = []
+          }
+          
+          // Check if user has created any stories themselves
+          let validUserStories = []
+          try {
+            const { data: userStories, error: userStoriesError } = await supabase
+              .from('stories')
+              .select('id, expires_at')
+              .eq('user_id', currentUser.id)
+              .eq('is_active', true)
+              .limit(10) // Get a few to check expiration client-side
+            
+            if (userStoriesError) {
+              console.warn('Stories: own stories check failed (likely none)')
+              // If stories table doesn't exist or user has no stories, set empty array
+              validUserStories = []
+            } else {
+              // Filter out expired stories client-side to handle missing expires_at
+              const now = new Date().toISOString()
+              validUserStories = userStories?.filter(story => {
+                if (!story.expires_at) return true // Keep stories without expiration date
+                return new Date(story.expires_at) > new Date(now)
+              }) || []
+            }
+          } catch (storiesError) {
+            console.warn('Stories: own stories query failed (likely table missing)')
+            validUserStories = []
+          }
+
+          // If user has no friends and no valid stories, return empty array
+          if ((!userFriends || userFriends.length === 0) && (!validUserStories || validUserStories.length === 0)) {
+            console.log('Stories: no friends and no stories -> skip fetch (cache set)')
+            setStories([])
+            setLastFetchTime(Date.now())
+            setLoading(false) // Important: Set loading to false
+            return []
+          }
+
+          console.log(`User has ${userFriends?.length || 0} friends and ${validUserStories?.length || 0} valid stories`)
+          shouldFetchStories = true
+        } catch (overallError) {
+          console.warn('Stories: precheck errored; treat as new user, skip fetch')
+          // For new users or when tables don't exist, skip stories fetch
+          console.log('Skipping stories fetch due to database setup issues (likely new user)')
+          setStories([])
+          setLastFetchTime(Date.now())
+          setLoading(false)
+          return []
+        }
+      }
       
-      console.log('Fetching stories for user:', currentUser?.id)
-      
+      // If for any reason we still shouldn't fetch, return early and mark cache time
+      if (!shouldFetchStories) {
+        setStories([])
+        setLastFetchTime(Date.now()) // prevent repeated checks until cache expires
+        setLoading(false)
+        return []
+      }
+
+      // 2) Only now perform broader checks and the actual stories fetch
       // Check database setup first
       const dbCheck = await checkDatabaseTables()
       if (!dbCheck.stories || !dbCheck.profiles) {
@@ -88,52 +178,12 @@ export function StoriesProvider({ children }) {
         return []
       }
 
-      // Check storage access
+      // Check storage access (non-blocking)
       const storageCheck = await checkStorageAccess()
       if (!storageCheck.exists) {
         console.warn('Stories storage bucket not accessible:', storageCheck.error)
       }
 
-      // Check if user has friends or own stories before making API call
-      if (currentUser?.id) {
-        try {
-          // Check if user has any friends
-          const userFriends = await getFriends(currentUser.id)
-          
-          // Check if user has created any stories themselves
-          const { data: userStories, error: userStoriesError } = await supabase
-            .from('stories')
-            .select('id, expires_at')
-            .eq('user_id', currentUser.id)
-            .eq('is_active', true)
-            .limit(10) // Get a few to check expiration client-side
-          
-          // Filter out expired stories client-side to handle missing expires_at
-          const now = new Date().toISOString()
-          const validUserStories = userStories?.filter(story => {
-            if (!story.expires_at) return true // Keep stories without expiration date
-            return new Date(story.expires_at) > new Date(now)
-          }) || []
-
-          if (userStoriesError) {
-            console.warn('Error checking user stories:', userStoriesError)
-          }
-
-          // If user has no friends and no valid stories, return empty array
-          if ((!userFriends || userFriends.length === 0) && (!validUserStories || validUserStories.length === 0)) {
-            console.log('User has no friends and no stories, skipping stories fetch')
-            setStories([])
-            setLastFetchTime(Date.now())
-            return []
-          }
-
-          console.log(`User has ${userFriends?.length || 0} friends and ${validUserStories?.length || 0} valid stories`)
-        } catch (friendsError) {
-          console.warn('Error checking friends/stories:', friendsError)
-          // Continue with fetch if there's an error checking friends/stories
-        }
-      }
-      
       // Fetch stories (including those without expires_at for backwards compatibility)
       const { data: storiesData, error: storiesError } = await supabase
         .from('stories')
@@ -155,14 +205,11 @@ export function StoriesProvider({ children }) {
       }) || []
 
       if (storiesError) {
-        console.error("Error fetching stories:", storiesError)
-        
-        if (storiesError.message?.includes('relation "stories" does not exist')) {
-          setError('Stories table not found. Please run the database setup first.')
-          return []
-        }
-        
-        throw new Error(`Database error: ${storiesError.message}`)
+        console.warn('Stories fetch skipped due to database error:', storiesError)
+        // Do not throw to avoid noisy console errors for new users; just surface a soft error
+        setError('Unable to load stories at the moment. Please try again later.')
+        setLoading(false)
+        return []
       }
 
       console.log('Fetched stories:', filteredStoriesData)
@@ -273,6 +320,7 @@ export function StoriesProvider({ children }) {
       setError(err.message || 'Failed to fetch stories')
       return []
     } finally {
+      isFetchingRef.current = false
       setLoading(false)
     }
   }

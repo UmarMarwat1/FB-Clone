@@ -20,7 +20,15 @@ export default function PostsFeed({ user }) {
       
       if (result.posts) {
         // Filter posts to show only user's and friends' posts
-        const friends = await getFriends(user.id)
+        let friends = []
+        try {
+          friends = await getFriends(user.id)
+        } catch (friendsError) {
+          console.warn('Error fetching friends for posts (likely new user):', friendsError)
+          // For new users without friends table setup, just show their own posts
+          friends = []
+        }
+        
         const friendIds = friends.map(friendship => 
           friendship.user1_id === user.id ? friendship.user2_id : friendship.user1_id
         )

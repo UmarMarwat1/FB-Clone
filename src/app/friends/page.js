@@ -40,8 +40,14 @@ export default function FriendsPage() {
     
     try {
       if (activeTab === 'friends') {
-        const data = await getFriends(user.id)
-        setFriends(data || [])
+        try {
+          const data = await getFriends(user.id)
+          setFriends(data || [])
+        } catch (friendsError) {
+          console.warn('Error loading friends (likely new user):', friendsError)
+          setFriends([])
+          // Don't set error for new users, just show empty state
+        }
       } else if (activeTab === 'requests') {
         const data = await getFriendRequests(user.id)
         setFriendRequests(data || [])

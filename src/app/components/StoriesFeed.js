@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { supabase } from '../../../lib/supabaseCLient'
 import { useStories } from '../context/StoriesContext'
 import styles from './stories.module.css'
@@ -18,12 +18,17 @@ export default function StoriesFeed({ currentUser }) {
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(false)
 
-  // Fetch stories automatically when component mounts
+  // Fetch stories once per user (prevent infinite re-fetch loops)
+  const fetchedForUserRef = useRef(null)
   useEffect(() => {
-    if (currentUser) {
+    const userId = currentUser?.id
+    if (!userId) return
+    // Only fetch if we haven't already fetched for this user id
+    if (fetchedForUserRef.current !== userId) {
+      fetchedForUserRef.current = userId
       fetchStories()
     }
-  }, [currentUser, fetchStories])
+  }, [currentUser?.id])
   
 
   const handleStoryClick = (index) => {
