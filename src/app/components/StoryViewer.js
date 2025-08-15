@@ -1,15 +1,21 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../../../lib/supabaseCLient'
 import styles from './stories.module.css'
 
 export default function StoryViewer({ stories, initialIndex = 0, onClose, currentUser, onEditStory, onDeleteStory }) {
+  console.log('=== StoryViewer rendered ===')
+  console.log('currentUser prop:', currentUser)
+  console.log('stories prop:', stories)
+  console.log('initialIndex:', initialIndex)
+  
   const [currentStoryIndex, setCurrentStoryIndex] = useState(initialIndex)
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
+  const [viewCount, setViewCount] = useState(0)
   const intervalRef = useRef(null)
   const videoRef = useRef(null)
 
@@ -17,6 +23,20 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
   const hasMedia = currentStory?.story_media?.length > 0
   const currentMedia = hasMedia ? currentStory.story_media[currentMediaIndex] : null
   const isUserStory = currentStory?.user_id === currentUser?.id
+  
+  // Prevent background scrolling when story viewer is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.width = '100%'
+    
+    return () => {
+      // Restore background scrolling when component unmounts
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+  }, [])
   
   // Debug logging
   console.log('StoryViewer Debug:', {
@@ -44,20 +64,56 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
 
   // Mark story as viewed
   useEffect(() => {
+    console.log('=== useEffect triggered ===')
+    console.log('currentStory:', currentStory)
+    console.log('currentUser:', currentUser)
+    console.log('currentStory?.id:', currentStory?.id)
+    console.log('currentUser?.id:', currentUser?.id)
+    console.log('isUserStory:', isUserStory)
+    
     if (currentStory && currentUser) {
-      markAsViewed(currentStory.id)
+      if (isUserStory) {
+        // User is viewing their own story - fetch view count
+        console.log('✅ User viewing own story - fetching view count')
+        fetchViewCount(currentStory.id)
+      } else {
+        // User is viewing someone else's story - mark as viewed
+        console.log('✅ User viewing someone else\'s story - marking as viewed')
+        markAsViewed(currentStory.id)
+      }
+    } else {
+      console.log('❌ Not calling functions - missing currentStory or currentUser')
+      console.log('currentStory exists:', !!currentStory)
+      console.log('currentUser exists:', !!currentUser)
     }
   }, [currentStory, currentUser])
 
   const markAsViewed = async (storyId) => {
+    console.log('=== markAsViewed called ===')
+    console.log('storyId:', storyId)
+    console.log('currentUser?.id:', currentUser?.id)
+    console.log('currentStory?.user_id:', currentStory?.user_id)
+    console.log('isUserStory:', isUserStory)
+    
     // Don't mark as viewed if no user or story
     if (!currentUser?.id || !storyId) {
+      console.log('❌ Early return: missing user or story')
       return
     }
 
+    // Don't count self-views
+    if (isUserStory) {
+      console.log('❌ Early return: self-view (not counting)')
+      return
+    }
+
+    console.log('✅ Proceeding to record view...')
+
     try {
+      console.log('Marking story as viewed:', storyId, 'by user:', currentUser.id)
+      
       // Use Supabase client directly instead of API route
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('story_views')
         .upsert({
           story_id: storyId,
@@ -67,23 +123,95 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
           onConflict: 'story_id,viewer_id'
         })
 
-      // Only log errors in development mode and if they're not expected
-      if (error && process.env.NODE_ENV === 'development') {
-        const errorMessage = error.message || error.toString() || ''
-        const isExpectedError = errorMessage.includes('relation "story_views" does not exist') ||
-                               errorMessage.includes('duplicate key value') ||
-                               errorMessage.includes('already exists') ||
-                               errorMessage.includes('permission denied')
-        
-        if (!isExpectedError) {
-          console.warn('Story view tracking failed:', errorMessage)
+      console.log('Upsert result - data:', data)
+      console.log('Upsert result - error:', error)
+
+      if (error) {
+        // Check if it's a table doesn't exist error
+        if (error.message?.includes('relation "story_views" does not exist')) {
+          console.warn('story_views table does not exist. Please run the setup SQL from STORY_VIEWS_SETUP.md')
+          return
         }
+        
+        // Log other errors in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Story view tracking failed:', error.message)
+        }
+      } else {
+        console.log('✅ Story view recorded successfully')
+        // Don't fetch view count here since we're not the story owner
+        // The story owner will fetch it when they view their own story
       }
     } catch (error) {
+      console.log('❌ Exception in markAsViewed:', error)
       // Completely silent in production, only warn in development
       if (process.env.NODE_ENV === 'development') {
         console.warn('Story view tracking failed:', error.message)
       }
+    }
+  }
+
+  const fetchViewCount = async (storyId) => {
+    try {
+      console.log('Fetching view count for story:', storyId)
+      console.log('Current story user_id:', currentStory?.user_id)
+      console.log('Current user id:', currentUser?.id)
+      console.log('Is user story:', isUserStory)
+      
+      // Only fetch view count if this is the story owner
+      if (!isUserStory) {
+        console.log('Not story owner, not fetching view count')
+        setViewCount(0)
+        return
+      }
+      
+      // First, let's try to get all views for this story without any filters
+      const { data: allData, error: allError } = await supabase
+        .from('story_views')
+        .select('viewer_id')
+        .eq('story_id', storyId)
+
+      console.log('All views data (no filters):', allData)
+      console.log('All views error:', allError)
+      
+      // Now try with the original query - exclude self-views
+      const { data, error } = await supabase
+        .from('story_views')
+        .select('viewer_id')
+        .eq('story_id', storyId)
+        .neq('viewer_id', currentStory?.user_id) // Exclude self-views
+
+      console.log('Filtered data from story_views:', data)
+      console.log('Error from story_views query:', error)
+
+      if (error) {
+        // Check if it's a table doesn't exist error
+        if (error.message?.includes('relation "story_views" does not exist')) {
+          console.warn('story_views table does not exist. Please run the setup SQL from STORY_VIEWS_SETUP.md')
+          setViewCount(0)
+          return
+        }
+        
+        console.log('Error fetching view count:', error)
+        setViewCount(0)
+        return
+      }
+
+      if (data) {
+        // Count unique viewers (friends only, excluding self-views)
+        const uniqueViewers = new Set(data.map(view => view.viewer_id))
+        const count = uniqueViewers.size
+        console.log('View count:', count, 'Unique viewers:', Array.from(uniqueViewers))
+        setViewCount(count)
+      } else {
+        console.log('No data returned from story_views query')
+        setViewCount(0)
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to fetch view count:', error.message)
+      }
+      setViewCount(0)
     }
   }
 
@@ -150,7 +278,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
       } else {
         // End of current user's stories - exit viewer
         console.log('End of user stories, closing viewer')
-        onClose()
+        handleCloseViewer()
       }
     }
   }
@@ -192,7 +320,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
   const handleKeyDown = (e) => {
     switch (e.key) {
       case 'Escape':
-        onClose()
+        handleCloseViewer()
         break
       case 'ArrowLeft':
         prevContent()
@@ -260,6 +388,18 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
 
   if (!currentStory) return null
 
+  const handleCloseViewer = useCallback(() => {
+    // Restore background scrolling
+    document.body.style.overflow = ''
+    document.body.style.position = ''
+    document.body.style.width = ''
+    
+    // Use setTimeout to prevent state update during render
+    setTimeout(() => {
+      onClose()
+    }, 0)
+  }, [onClose])
+
   return (
     <div className={styles.storyViewer} onClick={handleClick}>
       <div className={styles.viewerHeader}>
@@ -282,6 +422,11 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
             </div>
             <div className={styles.storyTime}>
               {formatTimeAgo(currentStory.created_at)}
+              {viewCount > 0 && (
+                <span className={styles.storyViewCount}>
+                  • {viewCount} view{viewCount !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -292,7 +437,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          onClose()
+          handleCloseViewer()
         }}
         title="Close story"
         aria-label="Close story"
@@ -320,7 +465,12 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
                 className={styles.storyViewerOptionItem}
                 onClick={(e) => {
                   e.stopPropagation()
-                  onEditStory(currentStory.id)
+                  // Immediately close the story viewer
+                  handleCloseViewer()
+                  // Call the edit function after a brief delay to ensure viewer is closed
+                  setTimeout(() => {
+                    onEditStory(currentStory.id)
+                  }, 150)
                   setShowOptions(false)
                 }}
               >
@@ -395,6 +545,18 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
           </div>
         )}
       </div>
+
+      {/* Story Views Section - Only show to story owner */}
+      {isUserStory && (
+        <div className={styles.storyViewsSection}>
+          <div className={styles.storyViewsContent}>
+            <span className={styles.storyViewsIcon}>👁️</span>
+            <span className={styles.storyViewsText}>
+              {viewCount > 0 ? `${viewCount} friend${viewCount !== 1 ? 's' : ''} viewed this story` : 'No views yet'}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Navigation areas */}
       <div 

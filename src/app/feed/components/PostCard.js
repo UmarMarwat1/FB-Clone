@@ -19,6 +19,48 @@ export default function PostCard({ post, user, onPostDeleted }) {
     fetchLikes()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Cleanup effect to restore body scroll when component unmounts
+  useEffect(() => {
+    return () => {
+      // Restore background scrolling on unmount
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+    }
+  }, [])
+
+  // Keyboard event handling for media viewer
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (showMediaViewer) {
+        switch (e.key) {
+          case 'Escape':
+            closeMediaViewer()
+            break
+          case 'ArrowLeft':
+            // Navigate to previous media if available
+            if (post.media && post.media.length > 1) {
+              const currentIndex = post.media.findIndex(media => media.media_url === selectedMedia?.media_url)
+              const prevIndex = currentIndex > 0 ? currentIndex - 1 : post.media.length - 1
+              setSelectedMedia(post.media[prevIndex])
+            }
+            break
+          case 'ArrowRight':
+            // Navigate to next media if available
+            if (post.media && post.media.length > 1) {
+              const currentIndex = post.media.findIndex(media => media.media_url === selectedMedia?.media_url)
+              const nextIndex = currentIndex < post.media.length - 1 ? currentIndex + 1 : 0
+              setSelectedMedia(post.media[nextIndex])
+            }
+            break
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showMediaViewer, selectedMedia, post.media])
+
   async function fetchComments() {
     try {
       const data = await getComments(post.id)
@@ -86,13 +128,35 @@ export default function PostCard({ post, user, onPostDeleted }) {
   }
 
   const handleMediaClick = (media) => {
+    // Store current scroll position
+    const scrollPosition = window.scrollY
+    sessionStorage.setItem('mediaViewerScrollPosition', scrollPosition.toString())
+    
     setSelectedMedia(media)
     setShowMediaViewer(true)
+    // Prevent background scrolling
+    document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.width = '100%'
+    document.body.style.height = '100%'
   }
 
   const closeMediaViewer = () => {
     setShowMediaViewer(false)
     setSelectedMedia(null)
+    // Restore background scrolling
+    document.body.style.overflow = ''
+    document.body.style.position = ''
+    document.body.style.width = ''
+    
+    // Restore scroll position after a brief delay to ensure modal is closed
+    setTimeout(() => {
+      const savedPosition = sessionStorage.getItem('mediaViewerScrollPosition')
+      if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition))
+        sessionStorage.removeItem('mediaViewerScrollPosition')
+      }
+    }, 100)
   }
 
   const formatDate = (dateString) => {
@@ -399,6 +463,44 @@ export default function PostCard({ post, user, onPostDeleted }) {
             >
               ✕
             </button>
+            
+            {/* Media counter for multiple media */}
+            {post.media && post.media.length > 1 && (
+              <div className={styles.mediaViewerCounter}>
+                {post.media.findIndex(media => media.media_url === selectedMedia?.media_url) + 1} / {post.media.length}
+              </div>
+            )}
+            
+            {/* Navigation buttons for multiple media */}
+            {post.media && post.media.length > 1 && (
+              <>
+                <button 
+                  className={styles.mediaViewerNavBtn}
+                  style={{ left: '1rem' }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const currentIndex = post.media.findIndex(media => media.media_url === selectedMedia?.media_url)
+                    const prevIndex = currentIndex > 0 ? currentIndex - 1 : post.media.length - 1
+                    setSelectedMedia(post.media[prevIndex])
+                  }}
+                >
+                  ‹
+                </button>
+                <button 
+                  className={styles.mediaViewerNavBtn}
+                  style={{ right: '1rem' }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const currentIndex = post.media.findIndex(media => media.media_url === selectedMedia?.media_url)
+                    const nextIndex = currentIndex < post.media.length - 1 ? currentIndex + 1 : 0
+                    setSelectedMedia(post.media[nextIndex])
+                  }}
+                >
+                  ›
+                </button>
+              </>
+            )}
+            
             {selectedMedia.media_type === 'image' ? (
               <img 
                 src={selectedMedia.media_url} 
