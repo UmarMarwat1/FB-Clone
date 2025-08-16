@@ -24,19 +24,24 @@ export default function SignupPage() {
         return
       }
       
-      // Insert into profiles table
+      // Profile is automatically created by database trigger
+      // Update the profile with username after a short delay
       const user = data.user
       if (user) {
-        const { error: profileError } = await supabase.from('profiles').insert([
-          { id: user.id, username }
-        ])
+        // Wait for the trigger to complete
+        await new Promise(resolve => setTimeout(resolve, 500))
         
-        if (profileError) {
-          console.error('Profile insertion error:', profileError)
-          setError(`Database error saving new user: ${profileError.message}`)
-          return
+        // Update the profile with username
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ username })
+          .eq('id', user.id)
+        
+        if (updateError) {
+          console.warn('Failed to update username, but signup was successful:', updateError)
         }
       }
+      
       setSuccess("Account created! Please check your email to verify.")
     } catch (err) {
       console.error('Signup error:', err)

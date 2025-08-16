@@ -386,8 +386,6 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  if (!currentStory) return null
-
   const handleCloseViewer = useCallback(() => {
     // Restore background scrolling
     document.body.style.overflow = ''
@@ -399,6 +397,8 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
       onClose()
     }, 0)
   }, [onClose])
+
+  if (!currentStory) return null
 
   return (
     <div className={styles.storyViewer} onClick={handleClick}>
