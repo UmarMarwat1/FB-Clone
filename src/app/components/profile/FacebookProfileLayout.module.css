@@ -1,0 +1,93 @@
+/* Facebook Profile Layout */
+.profileLayout {
+  background: #f0f2f5;
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 0px;
+}
+
+.headerContainer {
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0;
+  border-radius: 0;
+  width: 100%;
+}
+
+.contentContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Two Column Layout for Posts Tab */
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 0 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightColumn {
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .twoColumnLayout {
+    grid-template-columns: 320px 1fr;
+    gap: 12px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 992px) {
+  .twoColumnLayout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  
+  .leftColumn {
+    order: 2;
+  }
+  
+  .rightColumn {
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 0;
+  }
+  
+  .twoColumnLayout {
+    gap: 12px;
+    padding: 0 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 0;
+  }
+  
+  .twoColumnLayout {
+    padding: 0 8px;
+  }
+  
+  .headerContainer {
+    margin-bottom: 0;
+  }
+}

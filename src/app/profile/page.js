@@ -1,103 +1,48 @@
 "use client";
-import { useEffect, useState } from "react";
-import { supabase, getCurrentSession, getProfile, updateProfile } from "../../../lib/supabaseCLient"
-import styles from "./profile.module.css";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getCurrentSession } from "../../../lib/supabaseCLient";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState({ username: "", full_name: "", avatar_url: "" });
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
-    async function fetchProfile() {
-      setLoading(true);
-      setError("");
+    async function redirectToUserProfile() {
       const session = await getCurrentSession();
-      if (!session?.user) {
-        setError("User not logged in");
-        setLoading(false);
-        return;
+      if (session?.user) {
+        // Get user's profile to get their username
+        try {
+          const response = await fetch(`/api/profile/${session.user.id}`);
+          const data = await response.json();
+          
+          if (data.success && data.profile?.username) {
+            router.replace(`/profile/${data.profile.username}`);
+          } else {
+            // If no username, redirect to edit profile
+            router.replace('/profile/edit');
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+          router.replace('/profile/edit');
+        }
+      } else {
+        router.replace('/login');
       }
-      try {
-        const data = await getProfile(session.user.id);
-        setProfile({
-          username: data.username || "",
-          full_name: data.full_name || "",
-          avatar_url: data.avatar_url || "",
-        });
-      } catch (err) {
-        setError("Profile not found");
-      }
-      setLoading(false);
     }
-    fetchProfile();
-  }, []);
-
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-    const session = await getCurrentSession();
-    if (!session?.user) {
-      setError("User not logged in");
-      setLoading(false);
-      return;
-    }
-    try {
-      await updateProfile(session.user.id, profile);
-      setSuccess("Profile updated successfully!");
-      setEditing(false);
-    } catch (err) {
-      setError("Update failed");
-    }
-    setLoading(false);
-  };
-
-  if (loading) return <div className={styles.profileCard}>Loading...</div>;
-  if (error) return <div className={styles.profileCard}>Error: {error}</div>;
+    
+    redirectToUserProfile();
+  }, [router]);
 
   return (
-    <div className={styles.profileCard}>
-      <h2>My Profile</h2>
-      {success && <div className={styles.success}>{success}</div>}
-      {editing ? (
-        <form onSubmit={handleSubmit} className={styles.profileForm}>
-          <label className={styles.formLabel}>
-            Username:
-            <input name="username" value={profile.username} onChange={handleChange} required className={styles.formInput} />
-          </label>
-          <label className={styles.formLabel}>
-            Full Name:
-            <input name="full_name" value={profile.full_name} onChange={handleChange} className={styles.formInput} />
-          </label>
-          <label className={styles.formLabel}>
-            Avatar URL:
-            <input name="avatar_url" value={profile.avatar_url} onChange={handleChange} className={styles.formInput} />
-          </label>
-          <button type="submit" className={styles.profileButton}>Save</button>
-          <button type="button" onClick={() => setEditing(false)} className={styles.cancelButton}>Cancel</button>
-        </form>
-      ) : (
-        <div>
-          <div className={styles.avatarWrap}>
-            {profile.avatar_url ? (
-              <img src={profile.avatar_url} alt="avatar" className={styles.avatar} />
-            ) : (
-              <div className={styles.avatarPlaceholder}>No Avatar</div>
-            )}
-          </div>
-          <p><b>Username:</b> {profile.username}</p>
-          <p><b>Full Name:</b> {profile.full_name}</p>
-          <button onClick={() => setEditing(true)} className={styles.profileButton}>Edit Profile</button>
-        </div>
-      )}
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '50vh',
+      fontSize: '1.1rem',
+      color: '#666'
+    }}>
+      Redirecting to your profile...
     </div>
   );
 } 

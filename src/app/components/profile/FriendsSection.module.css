@@ -1,0 +1,387 @@
+/* Friends Container */
+.friendsContainer {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.friendsContainer.compact {
+  max-width: 360px;
+}
+
+/* Section Header */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  color: #1c1e21;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.addFriendBtn {
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addFriendBtn:hover {
+  background: #166fe5;
+}
+
+/* Compact Friends Grid for Left Column */
+.compactFriendsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+}
+
+.compactFriendItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.compactFriendItem:hover {
+  opacity: 0.8;
+}
+
+.compactFriendAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+.compactFriendName {
+  font-size: 0.85rem;
+  color: #1c1e21;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moreFriends {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f2f5;
+  border-radius: 6px;
+  color: #65676b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  grid-column: span 2;
+  padding: 12px;
+}
+
+.moreFriends:hover {
+  background: #e4e6ea;
+}
+
+/* Empty State */
+.emptyContainer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.emptyContainer p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Loading and Error States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #ef4444;
+}
+
+.errorContainer p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Full Friends Section Styles */
+.friendsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.friendsHeader h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.friendsTabs {
+  display: flex;
+  background: #f0f2f5;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.friendsTab {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #65676b;
+  transition: all 0.2s;
+}
+
+.friendsTab.active {
+  background: #1877f2;
+  color: white;
+}
+
+.friendsTab:hover:not(.active) {
+  background: #e4e6ea;
+}
+
+.friendsList {
+  margin-top: 24px;
+}
+
+.usersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.userCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.userCard:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.userAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.userName {
+  margin: 0 0 4px 0;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.userUsername {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.userActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  background: #f0f2f5;
+  color: #1c1e21;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: #e4e6ea;
+}
+
+.actionBtn.primary {
+  background: #1877f2;
+  color: white;
+}
+
+.actionBtn.primary:hover {
+  background: #166fe5;
+}
+
+.actionBtn.danger {
+  background: #ef4444;
+  color: white;
+}
+
+.actionBtn.danger:hover {
+  background: #dc2626;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyState h3 {
+  color: #374151;
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+}
+
+.emptyState p {
+  margin: 0 0 24px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .friendsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .friendsHeader h2 {
+    font-size: 1.25rem;
+  }
+  
+  .usersGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  
+  .compactFriendsGrid {
+    padding: 12px;
+    gap: 8px;
+  }
+  
+  .compactFriendAvatar {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .compactFriendName {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .usersGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .userCard {
+    padding: 12px;
+  }
+  
+  .userAvatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .compactFriendsGrid {
+    padding: 8px;
+    gap: 6px;
+  }
+  
+  .compactFriendAvatar {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .compactFriendName {
+    font-size: 0.75rem;
+  }
+  
+  .sectionHeader {
+    padding: 12px;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .addFriendBtn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}

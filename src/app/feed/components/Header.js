@@ -43,7 +43,12 @@ export default function Header({ user, setUser }) {
           <input type="text" placeholder="Search Facebook" />
         </div>
         <div className={styles.headerActions}>
-          <button className={styles.headerBtn}>Home</button>
+          <button 
+            className={styles.headerBtn}
+            onClick={() => router.push('/feed')}
+          >
+            Home
+          </button>
           <button 
             className={styles.headerBtn}
             onClick={() => router.push('/friends')}
@@ -61,7 +66,13 @@ export default function Header({ user, setUser }) {
             </button>
             {showProfileDropdown && (
               <div className={styles.profileDropdown}>
-                <div className={styles.dropdownItem}>
+                <div 
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    router.push('/profile');
+                  }}
+                >
                   <span>👤</span> Profile
                 </div>
                 <div className={styles.dropdownItem}>

@@ -132,6 +132,8 @@ export async function POST(request) {
         console.error('Insert media error:', mediaError)
         // Don't fail the whole operation, just log the error
       }
+
+
     }
 
     // Fetch the complete post with author and media

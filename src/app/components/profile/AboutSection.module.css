@@ -1,0 +1,523 @@
+/* About Container */
+.aboutContainer {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aboutContainer.compact {
+  max-width: 360px;
+  margin: 0;
+  gap: 16px;
+}
+
+/* Section Styling */
+.section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.section.compact {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sectionHeader.compact {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sectionHeader.compact h3 {
+  font-size: 1.1rem;
+}
+
+.editBtn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editBtn:hover {
+  background: #2563eb;
+}
+
+/* Profile Lock Section */
+.profileLock {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileLockIcon {
+  color: #1877f2;
+  font-size: 1.2rem;
+}
+
+.profileLockText {
+  color: #1c1e21;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.profileLockLink {
+  color: #1877f2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+.profileLockLink:hover {
+  text-decoration: underline;
+}
+
+/* Intro Section */
+.introSection {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.introTitle {
+  color: #1c1e21;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 16px 0;
+}
+
+.introItems {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.introItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.introIcon {
+  color: #65676b;
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.introText {
+  color: #1c1e21;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.introText strong {
+  font-weight: 600;
+}
+
+.editBioBtn {
+  width: 100%;
+  background: #f0f2f5;
+  color: #1c1e21;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background-color 0.2s;
+}
+
+.editBioBtn:hover {
+  background: #e4e6ea;
+}
+
+/* Info Grid for Basic Information */
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.infoIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.infoItem strong {
+  display: block;
+  color: #374151;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.infoItem p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.infoItem a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.infoItem a:hover {
+  text-decoration: underline;
+}
+
+/* Timeline Items for Education and Work */
+.timelineItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+  gap: 16px;
+}
+
+.timelineItem:last-child {
+  border-bottom: none;
+}
+
+.timelineContent {
+  flex: 1;
+}
+
+.timelineTitle {
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+}
+
+.timelineSubtitle {
+  color: #6b7280;
+  margin: 0 0 4px 0;
+  font-size: 0.9rem;
+}
+
+.timelinePeriod {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.timelineDescription {
+  color: #6b7280;
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.timelineActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.timelineActionBtn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.timelineActionBtn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Add New Item Button */
+.addNewBtn {
+  background: #f0f2f5;
+  color: #1c1e21;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.addNewBtn:hover {
+  background: #e4e6ea;
+}
+
+.addNewIcon {
+  font-size: 1.1rem;
+}
+
+/* Edit Form */
+.editForm {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  grid-column: span 2;
+}
+
+.checkboxGroup label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  margin: 0;
+  width: auto;
+  height: auto;
+}
+
+/* Form Actions */
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveBtn:hover {
+  background: #059669;
+}
+
+.cancelBtn {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #4b5563;
+}
+
+/* Loading States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.errorContainer {
+  text-align: center;
+  padding: 60px 20px;
+  color: #ef4444;
+}
+
+.retryBtn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background-color 0.2s;
+}
+
+.retryBtn:hover {
+  background: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .aboutContainer {
+    gap: 20px;
+  }
+  
+  .section {
+    padding: 16px;
+  }
+  
+  .sectionHeader h3 {
+    font-size: 1.1rem;
+  }
+  
+  .timelineItem {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .timelineActions {
+    align-self: flex-start;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .checkboxGroup {
+    grid-column: span 1;
+  }
+  
+  .formActions {
+    justify-content: stretch;
+  }
+  
+  .saveBtn, .cancelBtn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .aboutContainer {
+    gap: 16px;
+  }
+  
+  .section {
+    padding: 12px;
+  }
+  
+  .sectionHeader h3 {
+    font-size: 1rem;
+  }
+  
+  .infoItem {
+    gap: 8px;
+  }
+  
+  .timelineItem {
+    padding: 12px 0;
+  }
+  
+  .formActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

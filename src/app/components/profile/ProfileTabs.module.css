@@ -1,0 +1,134 @@
+/* Tabs Container */
+.tabsContainer {
+  background: #fff;
+  border-bottom: 1px solid #dadde1;
+  position: sticky;
+  top: 56px;
+  z-index: 10;
+  margin-top: 0;
+  width: 100%;
+}
+
+.tabsList {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.tabsList::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Individual Tab */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #65676b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab:hover {
+  color: #1c1e21;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.tab.active {
+  color: #1877f2;
+  border-bottom-color: #1877f2;
+  background: rgba(24, 119, 242, 0.05);
+}
+
+/* Tab Elements */
+.tabIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.tabLabel {
+  flex-shrink: 0;
+}
+
+.tabCount {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.tab.active .tabCount {
+  color: #1877f2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tabsList {
+    padding: 0 16px;
+    gap: 0;
+  }
+  
+  .tab {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    min-width: auto;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .tabIcon {
+    font-size: 1rem;
+  }
+  
+  .tabCount {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabsList {
+    padding: 0 12px;
+  }
+  
+  .tab {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .tabIcon {
+    font-size: 0.9rem;
+  }
+  
+  .tabLabel {
+    font-size: 0.75rem;
+  }
+  
+  .tabCount {
+    font-size: 0.7rem;
+  }
+}
+
+/* Small screens - hide icons */
+@media (max-width: 360px) {
+  .tabIcon {
+    display: none;
+  }
+  
+  .tab {
+    flex-direction: row;
+    gap: 6px;
+  }
+}

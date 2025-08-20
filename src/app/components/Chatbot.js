@@ -16,6 +16,16 @@ export default function Chatbot({ user }) {
   const messagesEndRef = useRef(null)
   const [isMobile, setIsMobile] = useState(false)
   const chatWindowRef = useRef(null)
+  const [cachedSession, setCachedSession] = useState(null)
+
+  // Cache session once per component mount
+  useEffect(() => {
+    const cacheSession = async () => {
+      const session = await getCurrentSession()
+      setCachedSession(session)
+    }
+    cacheSession()
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -65,7 +75,7 @@ export default function Chatbot({ user }) {
   }
 
   const sendMessage = async () => {
-    if (!input.trim() || !currentConversation || !user?.id) return
+    if (!input.trim() || !currentConversation || !user?.id || !cachedSession) return
     
     const userMessage = { role: "user", content: input, timestamp: new Date() }
     setMessages(prev => [...prev, userMessage])
@@ -73,14 +83,11 @@ export default function Chatbot({ user }) {
     setIsLoading(true)
 
     try {
-      // Get user session for authentication with refresh fallback
-      const session = await getCurrentSession()
-      
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${session?.access_token}` // Add auth token
+          'Authorization': `Bearer ${cachedSession?.access_token}` // Use cached session
         },
         body: JSON.stringify({ 
           message: input,
@@ -126,15 +133,14 @@ export default function Chatbot({ user }) {
   }
 
   const loadMessages = async (conversationId) => {
+    if (!cachedSession) return
+    
     try {
       console.log("Loading messages for conversation:", conversationId)
       
-      // Get user session for authentication with refresh fallback
-      const session = await getCurrentSession()
-      
       const response = await fetch(`/api/messages?conversationId=${conversationId}`, {
         headers: {
-          'Authorization': `Bearer ${session?.access_token}` // Add auth token
+          'Authorization': `Bearer ${cachedSession?.access_token}` // Use cached session
         }
       })
       const data = await response.json()
@@ -167,15 +173,14 @@ export default function Chatbot({ user }) {
   }
 
   const createNewConversation = async () => {
+    if (!cachedSession) return
+    
     try {
-      // Get user session for authentication with refresh fallback
-      const session = await getCurrentSession()
-      
       const response = await fetch('/api/conversations', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token}` // Add auth token
+          'Authorization': `Bearer ${cachedSession?.access_token}` // Use cached session
         },
         body: JSON.stringify({
           userId: user.id,
@@ -206,8 +211,7 @@ export default function Chatbot({ user }) {
       
       console.log("Attempting to delete message:", messageId)
       
-      // Get user session for authentication with refresh fallback
-      const session = await getCurrentSession()
+      if (!cachedSession) return
       
       // Find the message to be deleted
       const messageToDelete = messages.find(msg => msg.id === messageId)
@@ -233,7 +237,7 @@ export default function Chatbot({ user }) {
       const response = await fetch(`/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${session?.access_token}` // Add auth token
+          'Authorization': `Bearer ${cachedSession?.access_token}` // Use cached session
         }
       })
       

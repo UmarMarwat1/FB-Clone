@@ -9,10 +9,13 @@
 .header {
   background: #fff;
   border-bottom: 1px solid #dddfe2;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
 }
 
 .headerContent {
@@ -137,6 +140,7 @@
 .mainContent {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 0px;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   gap: 24px;
@@ -949,161 +953,6 @@
   }
 }
 
-/* Mobile (480px - 767px) */
-@media only screen and (min-width: 480px) and (max-width: 767px) {
-  .feedPage {
-    font-size: 14px;
-  }
-  
-  .header {
-    height: 50px;
-  }
-  
-  .headerContent {
-    padding: 0 16px;
-  }
-  
-  .logo {
-    font-size: 24px;
-  }
-  
-  .searchBar input {
-    width: 160px;
-    font-size: 14px;
-    padding: 8px 10px;
-  }
-  
-  .headerBtn {
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-  
-  .profileBtn {
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
-  }
-  
-  .mainContent {
-    grid-template-columns: 1fr;
-    padding: 16px;
-    gap: 16px;
-  }
-  
-  .leftSidebar {
-    display: none;
-  }
-  
-
-  
-  .rightSidebar {
-    display: block;
-    margin-top: 16px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
-  
-  .contactsHeader h4 {
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  
-  .contactItem {
-    padding: 10px 0;
-    font-size: 14px;
-    border-bottom: 1px solid #f0f2f5;
-  }
-  
-  .contactItem:last-child {
-    border-bottom: none;
-  }
-  
-  .contactAvatar {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-  
-  .centerFeed {
-    max-width: 100%;
-  }
-  
-  .storiesSection, .createPostSection, .postCard {
-    padding: 14px;
-  }
-  
-  .storiesContainer {
-    gap: 10px;
-  }
-  
-  .storyItem {
-    min-width: 75px;
-  }
-  
-  .storyImage {
-    width: 55px;
-    height: 55px;
-  }
-  
-  .storyName {
-    font-size: 12px;
-  }
-  
-  /* Removed createPostActions responsive styles - no longer used */
-  /* .createPostActions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-  }
-  
-  .postAction {
-    text-align: center;
-    padding: 8px 6px;
-    font-size: 13px;
-  } */
-  
-  .postUserAvatar {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-  
-  .postUserName {
-    font-size: 14px;
-  }
-  
-  .postContent {
-    font-size: 14px;
-  }
-  
-  .postActions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 6px;
-  }
-  
-  .postActionBtn {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  
-  .commentInputWrapper {
-    gap: 8px;
-  }
-  
-  .commentInput {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-  
-  .commentSubmitBtn {
-    font-size: 14px;
-    padding: 8px 16px;
-  }
-}
-
 /* Small Mobile (below 480px) */
 @media only screen and (max-width: 479px) {
   .feedPage {
@@ -1116,6 +965,7 @@
   
   .headerContent {
     padding: 0 12px;
+    height: 48px;
   }
   
   .logo {
@@ -1147,13 +997,12 @@
     grid-template-columns: 1fr;
     padding: 8px;
     gap: 12px;
+    margin-top: 10px;
   }
   
   .leftSidebar {
     display: none;
   }
-  
-
   
   .rightSidebar {
     display: block;
@@ -1223,50 +1072,32 @@
     padding: 8px 12px;
   }
   
-  /* Removed createPostActions responsive styles - no longer used */
-  /* .createPostActions {
-    flex-direction: row;
-    gap: 6px;
-  }
-  
-  .postAction {
-    text-align: center;
-    padding: 6px 8px;
-    font-size: 12px;
-  } */
-  
   .postUserAvatar {
     width: 32px;
     height: 32px;
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .postUserName {
-    font-size: 13px;
-  }
-  
-  .postTime {
-    font-size: 11px;
+    font-size: 14px;
   }
   
   .postContent {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .postActions {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 4px;
   }
   
   .postActionBtn {
-    flex: 1;
-    min-width: 70px;
     font-size: 11px;
-    padding: 6px 4px;
+    padding: 6px 2px;
   }
   
   .commentInputWrapper {
-    flex-direction: column;
     gap: 6px;
   }
   
@@ -1278,38 +1109,7 @@
   .commentSubmitBtn {
     font-size: 13px;
     padding: 6px 12px;
-    align-self: flex-end;
   }
-  
-  .commentUserAvatar {
-    width: 26px;
-    height: 26px;
-    font-size: 10px;
-  }
-  
-  .commentContent {
-    padding: 5px 8px;
-  }
-  
-  .commentUserName {
-    font-size: 11px;
-  }
-  
-  .commentTime {
-    font-size: 9px;
-  }
-  
-  .commentText {
-    font-size: 12px;
-  }
-}
-.headerContent {
-  padding: 0 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
 
 /* Extra Small Mobile (320px and below) */
@@ -1370,6 +1170,7 @@
     grid-template-columns: 1fr;
     padding: 6px;
     gap: 10px;
+    margin-top: 10px;
   }
   
   .leftSidebar {
@@ -1535,6 +1336,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     min-width: 100%;
+    height: 44px;
   }
   
   .headerContent::-webkit-scrollbar {
@@ -1580,6 +1382,7 @@
     grid-template-columns: 1fr;
     padding: 4px;
     gap: 8px;
+    margin-top: 10px;
   }
   
   .leftSidebar {
@@ -1631,7 +1434,6 @@
   .storyItem {
     min-width: 45px;
     padding: 10px;
-
   }
   
   .storyImage {
@@ -1640,100 +1442,58 @@
   }
   
   .storyName {
-    font-size: 10px;
+    font-size: 9px;
     max-width: 45px;
   }
   
   .userAvatar {
-    width: 40px;
-    height: 40px;
-    font-size: 11px;
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
   }
   
   .createPostInput {
-    font-size: 17px;
-    padding: 5px 8px;
+    font-size: 12px;
+    padding: 6px 10px;
   }
-  
-  /* Removed createPostActions responsive styles - no longer used */
-  /* .createPostActions {
-    flex-direction: row;
-    gap: 3px;
-    padding: 30px 15px;
-  }
-  
-  .postAction {
-    text-align: center;
-    padding: 4px 5px;
-    font-size: 10px;
-  } */
   
   .postUserAvatar {
-    width: 40px;
-    height: 40px;
-    font-size: 11px;
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
   }
   
   .postUserName {
-    font-size: 15px;
-  }
-  
-  .postTime {
-    font-size: 9px;
+    font-size: 12px;
   }
   
   .postContent {
-    font-size: 15px;
+    font-size: 12px;
   }
   
   .postActions {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 2px;
   }
   
   .postActionBtn {
-    flex: 1;
-    min-width: 55px;
-    font-size: 12px;
-    padding: 4px 2px;
+    font-size: 10px;
+    padding: 4px 1px;
   }
   
   .commentInputWrapper {
-    flex-direction: column;
-    gap: 3px;
+    gap: 4px;
   }
   
   .commentInput {
     font-size: 11px;
-    padding: 4px 6px;
+    padding: 4px 8px;
   }
   
   .commentSubmitBtn {
     font-size: 11px;
     padding: 4px 8px;
-    align-self: flex-end;
-  }
-  
-  .commentUserAvatar {
-    width: 22px;
-    height: 22px;
-    font-size: 8px;
-  }
-  
-  .commentContent {
-    padding: 3px 5px;
-  }
-  
-  .commentUserName {
-    font-size: 9px;
-  }
-  
-  .commentTime {
-    font-size: 7px;
-  }
-  
-  .commentText {
-    font-size: 10px;
   }
 } 
 

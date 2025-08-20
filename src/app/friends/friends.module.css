@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: #f0f2f5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding: 20px;
+  padding-top: 56px;
 }
 
 .friendsContainer {
@@ -12,6 +12,8 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow: hidden;
+  width: 100%;
+  padding: 20px;
 }
 
 .pageTitle {
@@ -480,12 +482,15 @@
   /* Mobile (480px - 767px) */
   @media only screen and (min-width: 480px) and (max-width: 767px) {
     .friendsPage {
-      padding: 16px;
+      padding-top: 56px;
+      padding-left: 16px;
+      padding-right: 16px;
     }
     
     .friendsContainer {
       max-width: 100%;
       border-radius: 10px;
+      width: 100%;
     }
     
     .pageTitle {
@@ -568,12 +573,15 @@
   /* Small Mobile (below 480px) */
   @media only screen and (max-width: 479px) {
     .friendsPage {
-      padding: 12px;
+      padding-top: 56px;
+      padding-left: 12px;
+      padding-right: 12px;
     }
     
     .friendsContainer {
       max-width: 100%;
       border-radius: 8px;
+      width: 100%;
     }
     
     .pageTitle {
@@ -666,12 +674,15 @@
   /* Extra Small Mobile (320px and below) */
   @media only screen and (max-width: 320px) {
     .friendsPage {
-      padding: 8px;
+      padding-top: 56px;
+      padding-left: 8px;
+      padding-right: 8px;
     }
     
     .friendsContainer {
       max-width: 100%;
       border-radius: 6px;
+      width: 100%;
     }
     
     .pageTitle {

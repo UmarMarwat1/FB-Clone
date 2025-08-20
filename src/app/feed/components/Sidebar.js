@@ -5,7 +5,11 @@ export default function Sidebar() {
   const router = useRouter()
   return (
     <div className={styles.leftSidebar}>
-      <div className={styles.sidebarItem}>
+      <div 
+        className={styles.sidebarItem}
+        onClick={() => router.push('/profile')}
+        style={{ cursor: 'pointer' }}
+      >
         <span>👤</span> Profile
       </div>
       <div className={styles.sidebarItem}>

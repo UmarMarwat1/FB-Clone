@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase, getCurrentSession, getFriends, getFriendRequests, searchUsers, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getFriendStatus } from "../../../lib/supabaseCLient"
+import Header from "../feed/components/Header"
 import styles from "./friends.module.css"
 
 export default function FriendsPage() {
@@ -70,13 +71,33 @@ export default function FriendsPage() {
       console.log('Searching for:', searchTerm, 'Current user:', user.id)
       const data = await searchUsers(searchTerm, user.id)
       console.log('Search results:', data)
-      const resultsWithStatus = await Promise.all(
-        data.map(async (u) => {
-          const status = await getFriendStatus(user.id, u.id)
-          return { ...u, friendStatus: status }
-        })
-      )
-      setSearchResults(resultsWithStatus)
+      
+      // Optimize by batching friend status checks instead of calling one by one
+      if (data.length > 0) {
+        // Get all friend statuses in parallel with a limit to avoid overwhelming the API
+        const batchSize = 5 // Process 5 users at a time
+        const resultsWithStatus = []
+        
+        for (let i = 0; i < data.length; i += batchSize) {
+          const batch = data.slice(i, i + batchSize)
+          const batchResults = await Promise.all(
+            batch.map(async (u) => {
+              try {
+                const status = await getFriendStatus(user.id, u.id)
+                return { ...u, friendStatus: status }
+              } catch (error) {
+                console.warn(`Failed to get friend status for user ${u.id}:`, error)
+                return { ...u, friendStatus: { status: 'none' } }
+              }
+            })
+          )
+          resultsWithStatus.push(...batchResults)
+        }
+        
+        setSearchResults(resultsWithStatus)
+      } else {
+        setSearchResults([])
+      }
     } catch (err) {
       setError('Search failed')
       console.error(err)
@@ -194,6 +215,7 @@ export default function FriendsPage() {
 
   return (
     <div className={styles.friendsPage}>
+      <Header user={user} setUser={setUser} />
       <div className={styles.friendsContainer}>
         <h1 className={styles.pageTitle}>Friends</h1>
         
