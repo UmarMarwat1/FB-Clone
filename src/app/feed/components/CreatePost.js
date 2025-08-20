@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import Image from "next/image"
 import { supabase } from "../../../../lib/supabaseCLient"
 import MediaUploader from "../../components/MediaUploader"
 import FeelingActivitySelector from "../../components/FeelingActivitySelector"
@@ -213,7 +214,12 @@ export default function CreatePost({ user, onPostCreated }) {
                     {uploadedMedia.slice(0, 4).map((media, index) => (
                       <div key={index} className={styles.mediaPreviewItem}>
                         {media.type === 'image' ? (
-                          <img src={media.url} alt="Preview" />
+                          <Image 
+                            src={media.url} 
+                            alt="Preview" 
+                            width={100}
+                            height={100}
+                          />
                         ) : (
                           <div className={styles.videoPreviewItem}>
                             <video src={media.url} />

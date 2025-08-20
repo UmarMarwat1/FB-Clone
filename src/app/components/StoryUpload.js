@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import styles from './stories.module.css'
 
@@ -316,7 +317,12 @@ export default function StoryUpload({ isOpen, onClose, onStoryCreated, currentUs
                             </div>
                           </>
                         ) : (
-                          <img src={media.preview} alt="Preview" />
+                          <Image 
+                            src={media.preview} 
+                            alt="Preview" 
+                            width={100}
+                            height={100}
+                          />
                         )}
                         <button
                           type="button"

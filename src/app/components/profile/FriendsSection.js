@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import styles from "./FriendsSection.module.css";
 
 export default function FriendsSection({ userId, currentUserId, isOwner, compact = false }) {
@@ -113,7 +114,13 @@ export default function FriendsSection({ userId, currentUserId, isOwner, compact
         <div className={styles.userInfo}>
           <div className={styles.avatarContainer}>
             {user.avatar_url ? (
-              <img src={user.avatar_url} alt="Avatar" className={styles.avatar} />
+              <Image 
+                src={user.avatar_url} 
+                alt="Avatar" 
+                width={50}
+                height={50}
+                className={styles.avatar} 
+              />
             ) : (
               <div className={styles.avatarPlaceholder}>
                 {user.full_name?.charAt(0) || user.username?.charAt(0) || "?"}
@@ -251,9 +258,11 @@ export default function FriendsSection({ userId, currentUserId, isOwner, compact
           <div className={styles.compactFriendsGrid}>
             {friends.slice(0, 6).map((friend) => (
               <div key={friend.id} className={styles.compactFriendItem}>
-                <img 
+                <Image 
                   src={friend.avatar_url || "/default-avatar.png"} 
                   alt={friend.full_name || friend.username} 
+                  width={40}
+                  height={40}
                   className={styles.compactFriendAvatar}
                 />
                 <span className={styles.compactFriendName}>

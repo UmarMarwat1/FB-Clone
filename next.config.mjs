@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@supabase/supabase-js']
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gxvoniatwchrhmecwmqs.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb'
-    },
-    responseLimit: false
-  }
+  serverExternalPackages: ['@supabase/supabase-js']
 };
 
 export default nextConfig;

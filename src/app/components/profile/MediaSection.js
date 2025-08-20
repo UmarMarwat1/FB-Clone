@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import styles from "./MediaSection.module.css";
 
 export default function MediaSection({ userId, isOwner, compact = false }) {
@@ -61,9 +62,11 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
             muted
           />
         ) : (
-          <img 
+          <Image 
             src={item.media_url} 
             alt={item.title || "Media"} 
+            width={200}
+            height={200}
             className={styles.mediaThumbnail}
           />
         )}
@@ -129,9 +132,11 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
           <div className={styles.compactMediaGrid}>
             {media.slice(0, 6).map((item) => (
               <div key={item.id} className={styles.compactMediaItem}>
-                <img 
+                <Image 
                   src={item.media_url} 
                   alt={item.title || "Photo"} 
+                  width={80}
+                  height={80}
                   className={styles.compactMediaThumbnail}
                 />
               </div>
@@ -229,9 +234,11 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
                 className={styles.viewerMedia}
               />
             ) : (
-              <img 
+              <Image 
                 src={selectedMedia.media_url} 
                 alt={selectedMedia.title || "Media"} 
+                width={800}
+                height={600}
                 className={styles.viewerMedia}
               />
             )}

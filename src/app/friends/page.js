@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { supabase, getCurrentSession, getFriends, getFriendRequests, searchUsers, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getFriendStatus } from "../../../lib/supabaseCLient"
 import Header from "../feed/components/Header"
@@ -20,22 +20,7 @@ export default function FriendsPage() {
     getUser()
   }, [])
 
-  useEffect(() => {
-    if (user) {
-      loadData()
-    }
-  }, [user, activeTab])
-
-  async function getUser() {
-    const session = await getCurrentSession()
-    if (!session?.user) {
-      router.push("/login")
-    } else {
-      setUser(session.user)
-    }
-  }
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true)
     setError('')
     
@@ -59,6 +44,21 @@ export default function FriendsPage() {
     }
     
     setLoading(false)
+  }, [user, activeTab])
+
+  useEffect(() => {
+    if (user) {
+      loadData()
+    }
+  }, [user, activeTab, loadData])
+
+  async function getUser() {
+    const session = await getCurrentSession()
+    if (!session?.user) {
+      router.push("/login")
+    } else {
+      setUser(session.user)
+    }
   }
 
   async function handleSearch() {

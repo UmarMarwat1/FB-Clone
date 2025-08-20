@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { supabase } from '../../../lib/supabaseCLient'
 import styles from './stories.module.css'
 
@@ -408,14 +409,16 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
         </div>
 
                  <div className={styles.storyUserInfo}>
-           <img
-             src={currentStory.profiles?.avatar_url || '/default-avatar.svg'}
-             alt={currentStory.profiles?.username}
-             className={styles.storyUserAvatar}
-             onError={(e) => {
-               e.target.src = '/default-avatar.svg'
-             }}
-           />
+          <Image
+            src={currentStory.profiles?.avatar_url || '/default-avatar.svg'}
+            alt={currentStory.profiles?.username}
+            width={40}
+            height={40}
+            className={styles.storyUserAvatar}
+            onError={(e) => {
+              e.target.src = '/default-avatar.svg'
+            }}
+          />
           <div>
             <div className={styles.storyUserName}>
               {currentStory.profiles?.full_name || currentStory.profiles?.username}
@@ -510,9 +513,11 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, curren
               }}
             />
           ) : (
-            <img
+            <Image
               src={currentMedia.media_url}
               alt="Story content"
+              width={400}
+              height={600}
               className={styles.storyMedia}
             />
           )

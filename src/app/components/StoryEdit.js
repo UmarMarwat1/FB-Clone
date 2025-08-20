@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { supabase } from '../../../lib/supabaseCLient'
 import styles from './stories.module.css'
 
@@ -88,7 +89,12 @@ export default function StoryEdit({ isOpen, onClose, story, onStoryUpdated, curr
                           </div>
                         </>
                       ) : (
-                        <img src={media.media_url} alt="Story media" />
+                        <Image 
+                          src={media.media_url} 
+                          alt="Story media" 
+                          width={100}
+                          height={100}
+                        />
                       )}
                     </div>
                   ))}

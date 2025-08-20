@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import PostCard from "../../feed/components/PostCard";
 import styles from "./UserPostsSection.module.css";
 
@@ -103,9 +104,11 @@ export default function UserPostsSection({ userId, isOwner, currentUser }) {
       {isOwner && (
         <div className={styles.postCreator}>
           <div className={styles.postCreatorHeader}>
-            <img 
+            <Image 
               src={currentUser?.avatar_url || "/default-avatar.png"} 
               alt="Profile" 
+              width={40}
+              height={40}
               className={styles.postCreatorAvatar}
             />
             <input

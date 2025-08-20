@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { supabase, getComments, addComment, deleteComment, getLikes, toggleLike } from "../../../../lib/supabaseCLient"
 import styles from "../feed.module.css"
 
@@ -248,9 +249,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
             // Single media item
             <div className={styles.singleMedia}>
               {post.media[0].media_type === 'image' ? (
-                <img 
+                <Image 
                   src={post.media[0].media_url} 
                   alt="Post media"
+                  width={500}
+                  height={400}
                   className={styles.mediaItem}
                   onClick={() => handleMediaClick(post.media[0])}
                 />
@@ -268,9 +271,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
               {post.media.map((media, index) => (
                 <div key={index} className={styles.mediaGridItem}>
                   {media.media_type === 'image' ? (
-                    <img 
+                    <Image 
                       src={media.media_url} 
                       alt="Post media"
+                      width={250}
+                      height={200}
                       className={styles.mediaItem}
                       onClick={() => handleMediaClick(media)}
                     />
@@ -289,9 +294,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
             <div className={styles.threeMediaGrid}>
               <div className={styles.mediaGridItem}>
                 {post.media[0].media_type === 'image' ? (
-                  <img 
+                  <Image 
                     src={post.media[0].media_url} 
                     alt="Post media"
+                    width={250}
+                    height={200}
                     className={styles.mediaItem}
                     onClick={() => handleMediaClick(post.media[0])}
                   />
@@ -307,9 +314,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
                 {post.media.slice(1, 3).map((media, index) => (
                   <div key={index + 1} className={styles.mediaGridItem}>
                     {media.media_type === 'image' ? (
-                      <img 
+                      <Image 
                         src={media.media_url} 
                         alt="Post media"
+                        width={250}
+                        height={200}
                         className={styles.mediaItem}
                         onClick={() => handleMediaClick(media)}
                       />
@@ -335,9 +344,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
                   }`}
                 >
                   {media.media_type === 'image' ? (
-                    <img 
+                    <Image 
                       src={media.media_url} 
                       alt="Post media"
+                      width={125}
+                      height={100}
                       className={styles.mediaItem}
                       onClick={() => handleMediaClick(media)}
                     />
@@ -502,9 +513,11 @@ export default function PostCard({ post, user, onPostDeleted }) {
             )}
             
             {selectedMedia.media_type === 'image' ? (
-              <img 
+              <Image 
                 src={selectedMedia.media_url} 
                 alt="Full size media"
+                width={800}
+                height={600}
                 className={styles.mediaViewerImage}
               />
             ) : (

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getCurrentSession } from "../../../../lib/supabaseCLient";
 import styles from "./ProfileHeader.module.css";
 
@@ -174,9 +175,11 @@ export default function ProfileHeader({ profile, currentUserId, isOwner, onUpdat
       {/* Cover Photo */}
       <div className={styles.coverContainer}>
         {profile.cover_url ? (
-          <img 
+          <Image 
             src={profile.cover_url} 
             alt="Cover" 
+            width={1200}
+            height={400}
             className={styles.coverPhoto}
           />
         ) : (
@@ -208,9 +211,11 @@ export default function ProfileHeader({ profile, currentUserId, isOwner, onUpdat
       <div className={styles.profileInfo}>
         <div className={styles.avatarContainer}>
           {profile.avatar_url ? (
-            <img 
+            <Image 
               src={profile.avatar_url} 
               alt="Avatar" 
+              width={150}
+              height={150}
               className={styles.avatar}
             />
           ) : (

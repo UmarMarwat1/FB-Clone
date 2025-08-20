@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getCurrentSession } from "../../../../lib/supabaseCLient";
 import Header from "../../feed/components/Header";
 import styles from "./editProfile.module.css";
@@ -212,9 +213,11 @@ export default function EditProfilePage() {
               <label>Cover Photo</label>
               <div className={styles.coverContainer}>
                 {profile.cover_url ? (
-                  <img 
+                  <Image
                     src={profile.cover_url} 
                     alt="Cover" 
+                    width={500}
+                    height={200}
                     className={styles.coverPreview}
                   />
                 ) : (
@@ -248,9 +251,11 @@ export default function EditProfilePage() {
               <label>Profile Picture</label>
               <div className={styles.avatarContainer}>
                 {profile.avatar_url ? (
-                  <img 
+                  <Image
                     src={profile.avatar_url} 
                     alt="Avatar" 
+                    width={100}
+                    height={100}
                     className={styles.avatarPreview}
                   />
                 ) : (
@@ -355,7 +360,7 @@ export default function EditProfilePage() {
                     <option value="single">Single</option>
                     <option value="in_relationship">In a relationship</option>
                     <option value="married">Married</option>
-                    <option value="complicated">It's complicated</option>
+                    <option value="complicated">It&apos;s complicated</option>
                     <option value="divorced">Divorced</option>
                     <option value="widowed">Widowed</option>
                   </select>

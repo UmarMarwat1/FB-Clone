@@ -209,7 +209,7 @@ export default function AboutSection({ userId, isOwner, onUpdate, compact = fals
                   <option value="single">Single</option>
                   <option value="in_relationship">In a relationship</option>
                   <option value="married">Married</option>
-                  <option value="complicated">It's complicated</option>
+                  <option value="complicated">It&apos;s complicated</option>
                   <option value="divorced">Divorced</option>
                   <option value="widowed">Widowed</option>
                 </select>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import Image from 'next/image'
 import { supabase } from '../../../lib/supabaseCLient'
 import { useStories } from '../context/StoriesContext'
 import styles from './stories.module.css'
@@ -312,14 +313,16 @@ export default function StoriesFeed({ currentUser }) {
             onClick={() => setShowUpload(true)}
           >
              <div className={styles.storyImage}>
-                             {/* Show user&apos;s profile picture or default avatar */}
-              <img 
-                src={currentUser?.avatar_url || '/default-avatar.svg'}
-                alt="Your profile"
-                onError={(e) => {
-                  e.target.src = '/default-avatar.svg'
-                }}
-              />
+               {/* Show user's profile picture or default avatar */}
+               <Image 
+                 src={currentUser?.avatar_url || '/default-avatar.svg'}
+                 alt="Your profile"
+                 width={60}
+                 height={60}
+                 onError={(e) => {
+                   e.target.src = '/default-avatar.svg'
+                 }}
+               />
                <div className={styles.addIcon}>+</div>
              </div>
              <span className={styles.storyName}>Create story</span>
@@ -335,25 +338,29 @@ export default function StoriesFeed({ currentUser }) {
                 className={styles.storyImage}
                 onClick={() => handleGroupClick(group)}
               >
-                <img 
+                <Image 
                   src={group.preview_image} 
                   alt={group.full_name || group.username}
+                  width={60}
+                  height={60}
                   onError={(e) => {
                     e.target.src = group.avatar_url || '/default-avatar.svg'
                   }}
-                 />
+                />
                 
                 {/* Profile picture overlay */}
-                 <div className={styles.storyProfilePic}>
-                   <img 
-                     src={group.avatar_url || '/default-avatar.svg'}
-                     alt={group.full_name || group.username}
-                     onError={(e) => {
-                       e.target.src = '/default-avatar.svg'
-                     }}
-                   />
-                 </div>
-             </div>
+                <div className={styles.storyProfilePic}>
+                  <Image 
+                    src={group.avatar_url || '/default-avatar.svg'}
+                    alt={group.full_name || group.username}
+                    width={30}
+                    height={30}
+                    onError={(e) => {
+                      e.target.src = '/default-avatar.svg'
+                    }}
+                  />
+                </div>
+              </div>
               <span className={styles.storyName}>
                 {group.is_own_story ? 'Your Story' : (group.full_name || group.username)}
               </span>
