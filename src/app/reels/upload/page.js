@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase, getCurrentSession } from '../../../../lib/supabaseCLient'
 import ReelUpload from '../../components/ReelUpload'
 import styles from './upload.module.css'
@@ -65,9 +66,9 @@ export default function ReelUploadPage() {
       <div className={styles.authRequired}>
         <h2>Sign in Required</h2>
         <p>Please sign in to create Reels</p>
-        <a href="/login" className={styles.loginButton}>
+        <Link href="/login" className={styles.loginButton}>
           Sign In
-        </a>
+        </Link>
       </div>
     )
   }
@@ -75,12 +76,12 @@ export default function ReelUploadPage() {
   return (
     <div className={styles.uploadPage}>
       <header className={styles.header}>
-        <a href="/reels" className={styles.backButton}>
+        <Link href="/reels" className={styles.backButton}>
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
           Back to Reels
-        </a>
+        </Link>
         <h1>Create Reel</h1>
       </header>
 

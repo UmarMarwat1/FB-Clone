@@ -85,19 +85,31 @@ export default function EditProfilePage() {
 
     setUploadingAvatar(true);
     try {
-      const formData = new FormData();
-      formData.append('avatar', file);
+      const session = await getCurrentSession();
+      if (!session?.user) {
+        setError("Please log in to upload avatar");
+        return;
+      }
 
-      const response = await fetch('/api/upload/avatar', {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', session.user.id);
+      formData.append('type', 'avatar');
+
+      const response = await fetch('/api/profile/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: formData
       });
 
       const data = await response.json();
       if (data.success) {
         setProfile(prev => ({ ...prev, avatar_url: data.avatar_url }));
+        setSuccess("Avatar uploaded successfully!");
       } else {
-        setError("Failed to upload avatar");
+        setError(data.error || "Failed to upload avatar");
       }
     } catch (err) {
       console.error("Avatar upload error:", err);
@@ -113,19 +125,31 @@ export default function EditProfilePage() {
 
     setUploadingCover(true);
     try {
-      const formData = new FormData();
-      formData.append('cover', file);
+      const session = await getCurrentSession();
+      if (!session?.user) {
+        setError("Please log in to upload cover photo");
+        return;
+      }
 
-      const response = await fetch('/api/upload/cover', {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', session.user.id);
+      formData.append('type', 'cover');
+
+      const response = await fetch('/api/profile/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: formData
       });
 
       const data = await response.json();
       if (data.success) {
         setProfile(prev => ({ ...prev, cover_url: data.cover_url }));
+        setSuccess("Cover photo uploaded successfully!");
       } else {
-        setError("Failed to upload cover photo");
+        setError(data.error || "Failed to upload cover photo");
       }
     } catch (err) {
       console.error("Cover upload error:", err);

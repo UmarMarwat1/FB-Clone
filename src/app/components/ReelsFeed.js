@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Link from 'next/link'
 import { supabase } from '../../../lib/supabaseCLient'
 import ReelPlayer from './ReelPlayer'
 import ReelComments from './ReelComments'
@@ -299,12 +300,12 @@ export default function ReelsFeed({ currentUser }) {
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎬</div>
         <h2>No Reels Available</h2>
         <p>Start your creative journey by creating your first reel or follow more people to discover amazing content!</p>
-        <a href="/reels/upload" className={styles.createReelButton}>
+        <Link href="/reels/upload" className={styles.createReelButton}>
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
           Create Your First Reel
-        </a>
+        </Link>
       </div>
     )
   }
@@ -316,12 +317,12 @@ export default function ReelsFeed({ currentUser }) {
         <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎬</div>
         <h2>No Reels Available</h2>
         <p>Start your creative journey by creating your first reel or follow more people to discover amazing content!</p>
-        <a href="/reels/upload" className={styles.createReelButton}>
+        <Link href="/reels/upload" className={styles.createReelButton}>
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
           Create Your First Reel
-        </a>
+        </Link>
       </div>
     )
   }

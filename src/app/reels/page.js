@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import ReelsFeed from '../components/ReelsFeed'
 import styles from './reels.module.css'
@@ -49,9 +50,9 @@ export default function ReelsPage() {
       <div className={styles.authRequired}>
         <h2>Sign in Required</h2>
         <p>Please sign in to view Reels</p>
-        <a href="/login" className={styles.loginButton}>
+        <Link href="/login" className={styles.loginButton}>
           Sign In
-        </a>
+        </Link>
       </div>
     )
   }
@@ -66,12 +67,12 @@ export default function ReelsPage() {
 
       {/* Top right - Create reels button */}
       <div className={styles.topRight}>
-        <a href="/reels/upload" className={styles.createButton}>
+        <Link href="/reels/upload" className={styles.createButton}>
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l11-7z"/>
           </svg>
           Create reel
-        </a>
+        </Link>
       </div>
 
       {/* Main content */}

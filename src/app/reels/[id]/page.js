@@ -1,15 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js'
-import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { supabase, getCurrentSession } from '../../../../lib/supabaseCLient'
 import ReelPlayer from '../../components/ReelPlayer'
 import ReelComments from '../../components/ReelComments'
 import styles from '../reels.module.css'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_KEY
-)
 
 export default function SingleReelPage() {
   const params = useParams()
@@ -138,10 +134,10 @@ export default function SingleReelPage() {
     return (
       <div className={styles.notFound}>
         <h2>Reel Not Found</h2>
-        <p>This reel may have been deleted or doesn't exist.</p>
-        <a href="/reels" className={styles.backButton}>
+        <p>This reel may have been deleted or doesn&apos;t exist.</p>
+        <Link href="/reels" className={styles.backButton}>
           Back to Reels
-        </a>
+        </Link>
       </div>
     )
   }
@@ -149,12 +145,12 @@ export default function SingleReelPage() {
   return (
     <div className={styles.singleReelPage}>
       <header className={styles.header}>
-        <a href="/reels" className={styles.backButton}>
+        <Link href="/reels" className={styles.backButton}>
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
           </svg>
           Back
-        </a>
+        </Link>
         <h1>Reel</h1>
       </header>
 
