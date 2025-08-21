@@ -1,0 +1,553 @@
+/* ===== EXACT FACEBOOK REELS STYLING ===== */
+.reelsPage {
+  min-height: 100vh;
+  background: #0f0f23;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+  }
+  
+/* ===== TOP ELEMENTS - FIXED POSITIONING ===== */
+.topLeft {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.facebookLogo {
+  width: 40px;
+  height: 40px;
+  background: #1877f2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 24px;
+  box-shadow: 0 4px 16px rgba(24, 119, 242, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.facebookLogo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+}
+
+.reelsText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.topRight {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #000000;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.createButton:hover {
+  background: #f0f0f0;
+}
+
+.createButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+.main {
+  height: 100vh;
+  overflow: hidden;
+  background: #0f0f23;
+}
+
+/* ===== LOADING AND AUTH STATES ===== */
+.loading,
+.authRequired,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  padding: 40px;
+  background: #0f0f23;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid #1877f2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p,
+.authRequired h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.authRequired p {
+  margin: 0 0 24px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.loginButton {
+  background: #1877f2;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.loginButton:hover {
+  background: #166fe5;
+}
+
+.emptyState h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.emptyState p {
+  margin: 0 0 24px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.createReelButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1877f2;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.createReelButton:hover {
+  background: #166fe5;
+}
+
+.createReelButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ===== REELS FEED - EXACT FACEBOOK LAYOUT ===== */
+.reelsFeed {
+  position: relative;
+  height: 100%;
+    width: 100%;
+    overflow: hidden;
+  background: #0f0f23;
+}
+
+.reelSlide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reelSlide.active {
+  z-index: 10;
+}
+
+/* ===== REEL PLAYER - EXACT FACEBOOK STYLE ===== */
+.reelPlayer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f23;
+}
+
+  .reelVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Facebook Reels exact dimensions - 9:16 aspect ratio */
+    max-width: 360px;
+    max-height: 640px;
+    /* Center the video perfectly */
+    margin: 0 auto;
+    /* Ensure video maintains aspect ratio */
+    aspect-ratio: 9/16;
+    /* Add subtle border for better definition */
+    border-radius: 8px;
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+    /* Add shadow for depth */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    /* Ensure video is responsive */
+    min-width: 280px;
+    min-height: 497px;
+  }
+
+  /* ===== PLAY OVERLAY STYLES ===== */
+  .playOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 50;
+    border-radius: 8px;
+  }
+
+  .playButton {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .playButton:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .playButton svg {
+    width: 32px;
+    height: 32px;
+    color: #0f0f23;
+    margin-left: 4px;
+  }
+
+/* ===== RIGHT SIDE ACTIONS - EXACT FACEBOOK STYLE ===== */
+.rightActions {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 100;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 0;
+}
+
+.actionButton:hover {
+  transform: scale(1.05);
+}
+
+.actionIcon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.actionCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ===== BOTTOM USER INFO - EXACT FACEBOOK STYLE ===== */
+.bottomInfo {
+  position: absolute;
+  bottom: 80px;
+  left: 16px;
+  z-index: 100;
+  max-width: 280px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.username {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.username::after {
+  content: '📷';
+  font-size: 14px;
+}
+
+.audioInfo {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  margin-bottom: 4px;
+}
+
+.audioSource {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* ===== NAVIGATION ARROWS - EXACT FACEBOOK STYLE ===== */
+.navigation {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.navButton {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.navButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.indicator {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 14px;
+    height: 52px;
+  }
+  
+  .header h1 {
+    font-size: 18px;
+  }
+  
+  .createButton {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .main {
+    padding-top: 52px;
+    height: calc(100vh - 52px);
+  }
+  
+  .rightActions {
+    right: 12px;
+    gap: 16px;
+  }
+  
+  .bottomInfo {
+    left: 12px;
+    bottom: 70px;
+  }
+  
+  .navigation {
+    padding: 0 12px;
+  }
+  
+  .navButton {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+    height: 48px;
+  }
+  
+  .header h1 {
+    font-size: 16px;
+  }
+  
+  .createButton {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .main {
+    padding-top: 48px;
+    height: calc(100vh - 48px);
+  }
+  
+  .rightActions {
+    right: 8px;
+    gap: 14px;
+  }
+  
+  .bottomInfo {
+    left: 8px;
+    bottom: 60px;
+  }
+  
+  .navigation {
+    padding: 0 8px;
+  }
+  
+  .navButton {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  
+  /* Mobile video adjustments */
+  .reelVideo {
+    max-width: 320px;
+    max-height: 568px;
+    min-width: 240px;
+    min-height: 427px;
+  }
+  
+  /* Mobile play button adjustments */
+  .playButton {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .playButton svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+  

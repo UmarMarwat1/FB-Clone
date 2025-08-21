@@ -55,6 +55,12 @@ export default function Header({ user, setUser }) {
           >
             Friends
           </button>
+          <button 
+            className={styles.headerBtn}
+            onClick={() => router.push('/reels')}
+          >
+            Reels
+          </button>
           <button className={styles.headerBtn}>Messages</button>
           <button className={styles.headerBtn}>Notifications</button>
           <div className={styles.profileDropdownContainer}>
@@ -95,7 +101,13 @@ export default function Header({ user, setUser }) {
                 <div className={styles.dropdownItem}>
                   <span>🔔</span> Notifications
                 </div>
-                <div className={styles.dropdownItem}>
+                <div 
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setShowProfileDropdown(false);
+                    router.push("/reels");
+                  }}
+                >
                   <span>📺</span> Watch
                 </div>
                 <div className={styles.dropdownItem}>

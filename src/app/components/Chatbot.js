@@ -4,7 +4,7 @@ import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import ConversationList from "./ConversationList"
 import styles from "./chatbot.module.css"
 
-export default function Chatbot({ user }) {
+export default function Chatbot({ user, commentsOpen = false }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState("")
   const [isOpen, setIsOpen] = useState(false)
@@ -357,7 +357,7 @@ export default function Chatbot({ user }) {
   return (
     <>
       <button 
-        className={styles.chatButton}
+        className={`${styles.chatButton} ${commentsOpen ? styles.chatButtonWithComments : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         title="Open AI Chat"
       >

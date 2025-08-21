@@ -3,11 +3,13 @@ import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import Chatbot from "./Chatbot"
+import { useComments } from "../context/CommentsContext"
 
 export default function ChatbotWrapper() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const pathname = usePathname()
+  const { commentsOpen } = useComments()
 
   useEffect(() => {
     getUser()
@@ -46,5 +48,5 @@ export default function ChatbotWrapper() {
   // Only show chatbot if user is logged in
   if (!user) return null
 
-  return <Chatbot user={user} />
+  return <Chatbot user={user} commentsOpen={commentsOpen} />
 }

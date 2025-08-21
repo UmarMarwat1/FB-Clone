@@ -1,96 +1,136 @@
-import { NextResponse } from "next/server";
-import { supabase } from "../../../../lib/supabaseCLient";
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+// Create Supabase client with service role key
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+)
 
 export async function POST(request) {
   try {
-    const { followerId, followingId } = await request.json();
+    const { follower_id, following_id } = await request.json()
     
-    if (!followerId || !followingId) {
+    if (!follower_id || !following_id) {
       return NextResponse.json(
-        { success: false, error: "Follower ID and Following ID are required" },
+        { error: 'Missing required fields' },
         { status: 400 }
-      );
+      )
     }
 
-    if (followerId === followingId) {
+    if (follower_id === following_id) {
       return NextResponse.json(
-        { success: false, error: "Cannot follow yourself" },
+        { error: 'Users cannot follow themselves' },
         { status: 400 }
-      );
+      )
     }
 
-    // Check if already following
-    const { data: existingFollow } = await supabase
-      .from("followers")
-      .select("*")
-      .eq("follower_id", followerId)
-      .eq("following_id", followingId)
-      .single();
+    // Insert the follow relationship
+    const { data, error: insertError } = await supabase
+      .from('followers')
+      .insert({
+        follower_id,
+        following_id
+      })
+      .select()
 
-    if (existingFollow) {
-      return NextResponse.json(
-        { success: false, error: "Already following this user" },
-        { status: 400 }
-      );
+    if (insertError) {
+      console.error('Insert error details:', insertError)
+      throw insertError
     }
 
-    // Create follow relationship
-    const { error } = await supabase
-      .from("followers")
-      .insert([{ follower_id: followerId, following_id: followingId }]);
-
-    if (error) {
-      console.error("Follow error:", error);
-      return NextResponse.json(
-        { success: false, error: "Failed to follow user" },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ 
+      message: 'Followed successfully',
+      following: true 
+    })
 
   } catch (error) {
-    console.error("API Error:", error);
+    console.error('Follow error:', error)
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function DELETE(request) {
   try {
-    const { followerId, followingId } = await request.json();
+    const { follower_id, following_id } = await request.json()
     
-    if (!followerId || !followingId) {
+    console.log('Unfollow request received:', { follower_id, following_id })
+    
+    if (!follower_id || !following_id) {
       return NextResponse.json(
-        { success: false, error: "Follower ID and Following ID are required" },
+        { error: 'Missing required fields' },
         { status: 400 }
-      );
+      )
     }
 
-    // Remove follow relationship
-    const { error } = await supabase
-      .from("followers")
-      .delete()
-      .eq("follower_id", followerId)
-      .eq("following_id", followingId);
-
-    if (error) {
-      console.error("Unfollow error:", error);
+    if (follower_id === following_id) {
       return NextResponse.json(
-        { success: false, error: "Failed to unfollow user" },
-        { status: 500 }
-      );
+        { error: 'Users cannot unfollow themselves' },
+        { status: 400 }
+      )
     }
 
-    return NextResponse.json({ success: true });
+    // Delete the follow relationship
+    const { error: deleteError } = await supabase
+      .from('followers')
+      .delete()
+      .eq('follower_id', follower_id)
+      .eq('following_id', following_id)
+
+    if (deleteError) {
+      console.error('Delete error details:', deleteError)
+      throw deleteError
+    }
+
+    console.log('Unfollow successful')
+
+    return NextResponse.json({ 
+      message: 'Unfollowed successfully',
+      following: false 
+    })
 
   } catch (error) {
-    console.error("API Error:", error);
+    console.error('Unfollow error:', error)
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
-    );
+    )
+  }
+}
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const follower_id = searchParams.get('follower_id')
+    const following_id = searchParams.get('following_id')
+
+    if (!follower_id || !following_id) {
+      return NextResponse.json(
+        { error: 'Missing required parameters' },
+        { status: 400 }
+      )
+    }
+
+    // Check if following
+    const { data: follow } = await supabase
+      .from('followers')
+      .select('*')
+      .eq('follower_id', follower_id)
+      .eq('following_id', following_id)
+      .single()
+
+    return NextResponse.json({ 
+      following: !!follow 
+    })
+
+  } catch (error) {
+    console.error('Check follow status error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

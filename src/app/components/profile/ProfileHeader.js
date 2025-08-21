@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getCurrentSession } from "../../../../lib/supabaseCLient";
@@ -16,22 +16,59 @@ export default function ProfileHeader({ profile, currentUserId, isOwner, onUpdat
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
-  // Check if current user is following this profile
-  useState(() => {
-    async function checkFollowStatus() {
-      if (!currentUserId || isOwner) return;
-      
-      try {
-        const response = await fetch(`/api/follow/status?followerId=${currentUserId}&followingId=${profile.id}`);
-        const data = await response.json();
-        setIsFollowing(data.isFollowing);
-      } catch (error) {
-        console.error("Error checking follow status:", error);
-      }
-    }
+  // Function to check follow status
+  const checkFollowStatus = useCallback(async () => {
+    if (!currentUserId || isOwner) return;
     
-    checkFollowStatus();
+    try {
+      const session = await getCurrentSession();
+      if (!session?.access_token) return;
+      
+      const response = await fetch('/api/follow/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          follower_id: currentUserId,
+          following_id: profile.id
+        })
+      });
+      
+      const data = await response.json();
+      if (data.following !== undefined) {
+        setIsFollowing(data.following);
+      }
+    } catch (error) {
+      console.error("Error checking follow status:", error);
+    }
   }, [currentUserId, profile.id, isOwner]);
+
+  // Check if current user is following this profile
+  useEffect(() => {
+    checkFollowStatus();
+    
+    // Add visibility change listener to refresh follow status when page becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkFollowStatus();
+      }
+    };
+    
+    // Add focus listener to refresh follow status when page gains focus
+    const handleFocus = () => {
+      checkFollowStatus();
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [checkFollowStatus]);
 
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
@@ -128,22 +165,29 @@ export default function ProfileHeader({ profile, currentUserId, isOwner, onUpdat
 
     setIsFollowLoading(true);
     try {
+      const session = await getCurrentSession();
+      if (!session?.access_token) {
+        alert("Please log in to follow users");
+        return;
+      }
+
       const method = isFollowing ? "DELETE" : "POST";
       const response = await fetch("/api/follow", {
         method,
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          followerId: currentUserId,
-          followingId: profile.id,
+          follower_id: currentUserId,
+          following_id: profile.id,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
         setIsFollowing(!isFollowing);
-        // Optionally update follower count in parent component
+        // Update follower count in parent component
         const newCount = isFollowing 
           ? (profile.followers_count || 0) - 1 
           : (profile.followers_count || 0) + 1;

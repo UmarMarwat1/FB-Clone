@@ -1,0 +1,1650 @@
+/* ===== REELS FEED STYLES ===== */
+.reelsFeed {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Adjust width when comments are open */
+  transition: all 0.3s ease;
+}
+
+.reelsFeed.withComments {
+  width: calc(100% - 400px);
+  margin-right: 400px;
+}
+  
+  .reelSlide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .reelSlide.active {
+    z-index: 1;
+  }
+  
+/* ===== REEL PLAYER STYLES ===== */
+.reelPlayer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f23;
+  border-radius: 0;
+  overflow: hidden;
+  padding: 20px;
+  /* Ensure proper positioning when comments are open */
+  transition: all 0.3s ease;
+}
+
+  /* ===== REEL VIDEO STYLES - FACEBOOK EXACT DIMENSIONS ===== */
+  .reelVideo {
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    /* Facebook Reels exact dimensions - 9:16 aspect ratio */
+    max-width: 360px;
+    max-height: 640px;
+    /* Center the video perfectly */
+    margin: 15px auto;
+    /* Ensure video maintains aspect ratio */
+    aspect-ratio: 9/16;
+    /* Add subtle border for better definition */
+    border-radius: 8px;
+    /* Smooth transitions */
+    transition: all 0.3s ease;
+    /* Add shadow for depth */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    /* Ensure video is responsive */
+    min-width: 280px;
+    min-height: 497px;
+    /* Prevent video from being cropped */
+    object-position: center;
+  }
+
+  .videoError {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 360px;
+    height: 640px;
+    background: linear-gradient(45deg, #1a1a2e, #16213e);
+    border-radius: 8px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
+    text-align: center;
+    margin: 15px auto;
+    aspect-ratio: 9/16;
+    min-width: 280px;
+    min-height: 497px;
+  }
+  
+  .videoContainer {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+  }
+  
+  .video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  border-radius: 0;
+  transition: transform 0.3s ease;
+}
+
+.video:hover {
+  transform: scale(1.02);
+  }
+  
+  .playButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .playButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  .playButton svg {
+  width: 40px;
+  height: 40px;
+    color: white;
+  margin-left: 6px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  /* ===== PLAY OVERLAY STYLES ===== */
+  .playOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 50;
+    border-radius: 8px;
+  }
+
+  .playOverlay .playButton {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .playOverlay .playButton:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+
+    .playOverlay .playButton svg {
+    width: 32px;
+    height: 32px;
+    color: #0f0f23;
+    margin-left: 4px;
+  }
+
+  /* ===== VIDEO CONTROLS STYLES ===== */
+  .videoControls {
+    position: absolute;
+    top: 40px;
+    right: 630px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  .controlButton {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+  }
+
+  .controlButton:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+  }
+
+  .controlButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ===== DROPDOWN MENU STYLES ===== */
+  .dropdownMenu {
+    position: relative;
+  }
+
+  .dropdownContent {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .dropdownMenu:hover .dropdownContent {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 100%;
+    text-align: left;
+  }
+
+  .dropdownItem:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .dropdownItem svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dropdownItem.deleteItem {
+    color: #e41e3f;
+  }
+
+  .dropdownItem.deleteItem:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* ===== REEL INFO STYLES ===== */
+  .reelInfo {
+    position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+    z-index: 2;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.95));
+  padding: 40px 24px 24px;
+  backdrop-filter: blur(10px);
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  }
+  
+  .avatar {
+  width: 48px;
+  height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+  }
+  
+  .userDetails {
+    flex: 1;
+  min-width: 0;
+  }
+  
+  .username {
+  font-weight: 700;
+  font-size: 16px;
+    color: white;
+    display: block;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .caption {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.5;
+    margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  word-wrap: break-word;
+  }
+  
+/* ===== ACTIONS STYLES ===== */
+  .actions {
+    display: flex;
+    align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  }
+  
+  .actionButton {
+    display: flex;
+  flex-direction: column;
+    align-items: center;
+  gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 12px 16px;
+    color: white;
+    font-size: 12px;
+  font-weight: 600;
+    cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  min-width: 60px;
+  }
+  
+  .actionButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  
+  .actionButton.liked {
+  background: rgba(255, 59, 92, 0.25);
+  border-color: rgba(255, 59, 92, 0.6);
+  color: #ff3b5c;
+}
+
+.actionButton.liked:hover {
+  background: rgba(255, 59, 92, 0.35);
+  border-color: rgba(255, 59, 92, 0.8);
+  }
+  
+  .actionButton svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.actionButton:hover svg {
+  transform: scale(1.1);
+}
+
+.actionButton span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Save button specific styles */
+.actionButton.saved {
+  color: #ff6b35; /* Orange color for saved state */
+}
+
+.actionButton.saved:hover {
+  color: #e55a2b;
+}
+
+.actionButton.saved svg {
+  fill: #ff6b35;
+}
+
+.actionButton.saved:hover svg {
+  fill: #e55a2b;
+}
+
+/* Save button when not saved */
+.actionButton:not(.saved) svg {
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Like button specific styles */
+.actionButton.liked {
+  color: #ff3b5c; /* Red color for liked state */
+}
+
+.actionButton.liked:hover {
+  color: #e62e4d;
+}
+
+.actionButton.liked svg {
+  fill: #ff3b5c;
+}
+
+.actionButton.liked:hover svg {
+  fill: #e62e4d;
+}
+
+/* ===== RIGHT SIDE ACTIONS ===== */
+.rightActions {
+  position: absolute;
+  right: 520px;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+
+.rightActionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+}
+
+.rightActionButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.rightActionButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.rightActionButton span {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ===== NAVIGATION STYLES ===== */
+  .navigation {
+    position: fixed;
+  right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  gap: 16px;
+    z-index: 10;
+  }
+  
+  .navButton {
+  width: 48px;
+  height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  font-size: 20px;
+    cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+  
+  .navButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  
+  .navButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  .indicator {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+    backdrop-filter: blur(10px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ===== LOADING AND EMPTY STATES ===== */
+.loading,
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  height: 100vh;
+    text-align: center;
+    padding: 40px;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #007bff;
+    border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 123, 255, 0.3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p,
+.emptyState h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.emptyState p {
+  margin: 0 0 32px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.emptyState .createReelButton {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+    cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 123, 255, 0.3);
+}
+
+.emptyState .createReelButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 123, 255, 0.4);
+}
+
+.emptyState .createReelButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== PAGE LAYOUT STYLES ===== */
+.reelsPage {
+    min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    color: white;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  padding: 20px 24px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .header h1 {
+    margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .headerActions {
+    display: flex;
+    align-items: center;
+  gap: 16px;
+  }
+  
+.createButton {
+    display: flex;
+    align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    text-decoration: none;
+    border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+    cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+  }
+  
+.createButton:hover {
+    transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);
+}
+
+.createButton svg {
+  width: 18px;
+  height: 18px;
+  }
+  
+  .main {
+    flex: 1;
+  }
+  
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .reelInfo {
+    padding: 32px 20px 20px;
+  }
+  
+  .userInfo {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .username {
+    font-size: 15px;
+  }
+  
+  .caption {
+    font-size: 14px;
+  }
+  
+  .actions {
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .actionButton {
+    padding: 10px 14px;
+    min-width: 56px;
+  }
+  
+  .rightActions {
+    right: 20px;
+    bottom: 100px;
+    gap: 16px;
+  }
+  
+  .rightActionButton {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .rightActionButton svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .header {
+    padding: 16px 20px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+  }
+  
+  .createButton {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .navigation {
+    right: 20px;
+  }
+  
+  .navButton {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reelInfo {
+    padding: 28px 16px 16px;
+  }
+  
+  .actions {
+    gap: 12px;
+  }
+  
+  .actionButton {
+    padding: 8px 12px;
+    min-width: 52px;
+    font-size: 11px;
+  }
+  
+  .rightActions {
+    right: 16px;
+    bottom: 80px;
+    gap: 12px;
+  }
+  
+  .rightActionButton {
+    width: 44px;
+    height: 44px;
+    }
+    
+    .header {
+      padding: 12px 16px;
+    }
+    
+    .header h1 {
+      font-size: 20px;
+    }
+}
+
+/* ===== RESPONSIVE VIDEO STYLES ===== */
+@media (max-width: 768px) {
+  .reelVideo {
+    max-width: 320px;
+    max-height: 568px;
+    min-width: 240px;
+    min-height: 427px;
+    /* Ensure video fits properly on mobile */
+    width: auto;
+    height: auto;
+    /* Maintain 15px margins on mobile */
+    margin: 15px auto;
+  }
+  
+  .playOverlay .playButton {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .playOverlay .playButton svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .reelVideo {
+    max-width: 400px;
+    max-height: 711px;
+    min-width: 300px;
+    min-height: 533px;
+    /* Ensure video fits properly on tablet */
+    width: auto;
+    height: auto;
+    /* Maintain 15px margins on tablet */
+    margin: 15px auto;
+  }
+}
+
+@media (min-width: 1025px) {
+  .reelVideo {
+    max-width: 420px;
+    max-height: 747px;
+    min-width: 320px;
+    min-height: 569px;
+    /* Ensure video fits properly on desktop */
+    width: auto;
+    height: auto;
+    /* Maintain 15px margins on desktop */
+    margin: 15px auto;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reelSlide.active .reelInfo {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reelSlide.active .rightActions {
+  animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.reelSlide.active .actions {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.reelsFeed::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+/* ===== FOCUS STATES ===== */
+.actionButton:focus,
+.rightActionButton:focus,
+.navButton:focus,
+.createButton:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.reelSlide:hover .video {
+  transform: scale(1.01);
+}
+
+.actionButton:active,
+.rightActionButton:active,
+.navButton:active {
+  transform: scale(0.95);
+  }
+
+/* ===== NEW FACEBOOK-STYLE REEL INFO STYLES ===== */
+.bottomInfo {
+  position: absolute;
+  bottom: 50px;
+  left: 600px;
+  z-index: 100;
+  max-width: 320px;
+  color: white;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.userAvatar:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.05);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex: 1;
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.username {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.username:hover {
+  color: #1da1f2;
+  text-decoration: underline;
+}
+
+.verifiedBadge {
+  background: #1da1f2;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.followButton {
+  background: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.followButton:hover {
+  background: #1a91da;
+  transform: scale(1.05);
+}
+
+.followButton.following {
+  background: #e4e6eb;
+  color: #65676b;
+  border: 1px solid #e4e6eb;
+}
+
+.followButton.following:hover {
+  background: #d8dadf;
+  border-color: #d8dadf;
+}
+
+.captionSection {
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.caption {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hashtag {
+  color: #1da1f2;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.hashtag:hover {
+  color: #1a91da;
+  text-decoration: underline;
+}
+
+.audioInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.audioIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Comments Panel - White Theme */
+.commentsPanel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: white;
+  border-left: 1px solid #e4e6eb;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Comments Header - White Theme */
+.commentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e4e6eb;
+  background: white;
+}
+
+.commentsHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c1e21;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #65676b;
+  padding: 4px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #f0f2f5;
+  color: #1c1e21;
+}
+
+/* Comments List - White Theme */
+.commentsList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+  background: white;
+}
+
+.commentsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.commentsList::-webkit-scrollbar-track {
+  background: #f0f2f5;
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+  background: #c1c7cd;
+  border-radius: 3px;
+}
+
+.commentsList::-webkit-scrollbar-thumb:hover {
+  background: #a8b0b8;
+}
+
+/* Comment Item - White Theme */
+.comment {
+  display: flex;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f2f5;
+  background: white;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comment:hover {
+  background: #f8f9fa;
+}
+
+.commentAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.commentContent {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: justify;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 8px;
+}
+
+.commentUsername {
+  font-weight: 600;
+  color: #1c1e21;
+  font-size: 14px;
+}
+
+.commentTime {
+  color: #65676b;
+  font-size: 12px;
+}
+
+.commentText {
+  margin: 8px 0;
+  color: #1c1e21;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  white-space: pre-wrap;
+  hyphens: auto;
+  overflow: hidden;
+}
+
+.commentActions {
+  margin-top: 8px;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: #0084ff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #f0f8ff;
+}
+
+/* Reply Form - White Theme */
+.replyForm {
+  margin: 12px 0 0 48px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+}
+
+.replyInputContainer {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  gap: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #e4e6eb;
+}
+
+.replyInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: #1c1e21;
+  padding: 8px 0;
+}
+
+.replyInput::placeholder {
+  color: #65676b;
+}
+
+.replyActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.replySubmit {
+  background: #0084ff;
+  color: white;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.replySubmit:hover:not(:disabled) {
+  background: #0073e6;
+}
+
+.replySubmit:disabled {
+  background: #e4e6eb;
+  color: #bcc0c4;
+  cursor: not-allowed;
+}
+
+.replyCancel {
+  background: #e4e6eb;
+  color: #65676b;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.replyCancel:hover {
+  background: #d8dadf;
+}
+
+/* Edit Comment/Reply Forms */
+.editCommentForm,
+.editReplyForm {
+  margin: 8px 0;
+}
+
+.editCommentTextarea,
+.editReplyTextarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+.editCommentTextarea:focus,
+.editReplyTextarea:focus {
+  outline: none;
+  border-color: #1da1f2;
+  box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.editCommentActions,
+.editReplyActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.editCommentSave,
+.editReplySave {
+  background: #1da1f2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editCommentSave:hover,
+.editReplySave:hover {
+  background: #1a91da;
+}
+
+.editCommentSave:disabled,
+.editReplySave:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.editCommentCancel,
+.editReplyCancel {
+  background: #e4e6eb;
+  color: #65676b;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editCommentCancel:hover,
+.editReplyCancel:hover {
+  background: #d8dadf;
+}
+
+/* Replies Container - White Theme */
+.repliesContainer {
+  margin: 12px 0 0 48px;
+  padding-left: 16px;
+  border-left: 2px solid #e4e6eb;
+}
+
+.reply {
+  display: flex;
+  padding: 12px 0;
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.replyAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.replyContent {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.replyHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  gap: 8px;
+}
+
+.replyUsername {
+  font-weight: 600;
+  color: #1c1e21;
+  font-size: 13px;
+}
+
+.replyTime {
+  color: #65676b;
+  font-size: 11px;
+}
+
+.replyText {
+  margin: 4px 0;
+  color: #1c1e21;
+  font-size: 13px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  white-space: pre-wrap;
+  hyphens: auto;
+  overflow: hidden;
+}
+
+/* Comment Form - Bottom Positioned */
+.commentForm {
+  position: relative;
+  padding: 20px 24px;
+  border-top: 1px solid #e4e6eb;
+  background: white;
+  margin-top: auto;
+}
+
+.commentInputContainer {
+  display: flex;
+  align-items: center;
+  background: #f0f2f5;
+  border-radius: 20px;
+  padding: 8px 16px;
+  gap: 8px;
+  border: 1px solid #e4e6eb;
+}
+
+.commentInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: #1c1e21;
+  padding: 8px 0;
+}
+
+.commentInput::placeholder {
+  color: #65676b;
+}
+
+.commentSubmit {
+  background: #0084ff;
+  color: white;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.commentSubmit:hover:not(:disabled) {
+  background: #0073e6;
+}
+
+.commentSubmit:disabled {
+  background: #e4e6eb;
+  color: #bcc0c4;
+  cursor: not-allowed;
+}
+
+/* Emoji functionality styles */
+.emojiButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+}
+
+.emojiButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.emojiPickerContainer {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 10px;
+  z-index: 1000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e1e5e9;
+}
+
+/* Loading and No Comments - White Theme */
+.commentsLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background: white;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e4e6eb;
+  border-top: 2px solid #0084ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.noComments {
+  text-align: center;
+  padding: 40px 24px;
+  color: #65676b;
+  background: white;
+}
+
+.noComments p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Comments Backdrop */
+.commentsBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Reels Feed with Comments */
+.reelsFeed.withComments {
+  width: calc(100% - 400px);
+  margin-right: 400px;
+  transition: all 0.3s ease;
+}
+
+/* Reel Player adjustments when comments are open */
+.reelsFeed.withComments .reelPlayer {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Video controls positioning when comments are open */
+.reelsFeed.withComments .videoControls {
+  right: 425px;
+  left: auto;
+  z-index: 10;
+}
+
+/* Right actions positioning when comments are open */
+.reelsFeed.withComments .rightActions {
+  right: 320px;
+  left: auto;
+  z-index: 10;
+}
+
+/* Bottom info overlay positioning when comments are open */
+.reelsFeed.withComments .bottomInfo {
+  left: 420px;
+  right: 20px;
+  bottom: 60px;
+  max-width: calc(100% - 40px);
+  z-index: 10;
+}
+
+/* User info positioning when comments are open */
+.reelsFeed.withComments .userInfo {
+  max-width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Caption section positioning when comments are open */
+.reelsFeed.withComments .captionSection {
+  max-width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Audio info positioning when comments are open */
+.reelsFeed.withComments .audioInfo {
+  max-width: 100%;
+}
+
+/* Ensure proper video container sizing */
+.reelsFeed.withComments .reelContainer {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Adjust video aspect ratio when comments are open */
+.reelsFeed.withComments .reelVideo {
+  width: 100%;
+  height: auto;
+  max-height: 100vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+@media only screen and (min-width: 992px) and (max-width: 1279px) {
+  .rightActions{
+    left: 850px;
+  }
+  .bottomInfo{
+    left: 475px;
+  }
+}
