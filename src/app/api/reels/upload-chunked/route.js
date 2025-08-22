@@ -7,16 +7,6 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY
 // Maximum file size: 100MB
 const MAX_FILE_SIZE = 100 * 1024 * 1024
 
-// Configuration for deployment platforms
-export const config = {
-  api: {
-    responseLimit: false,
-    bodyParser: {
-      sizeLimit: '100mb'
-    }
-  }
-}
-
 // Helper function to create authenticated Supabase client
 function createAuthenticatedClient(request) {
   const authHeader = request.headers.get('authorization');
@@ -33,18 +23,6 @@ function createAuthenticatedClient(request) {
       }
     }
   });
-}
-
-// Handle CORS preflight requests
-export async function OPTIONS(request) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  })
 }
 
 export async function POST(request) {
@@ -71,20 +49,64 @@ export async function POST(request) {
       }, { status: 401 })
     }
 
-    // Parse form data with error handling
-    let formData
+    // Get the raw body as a buffer first
+    const rawBody = await request.arrayBuffer()
+    
+    // Convert to FormData
+    const formData = new FormData()
+    
+    // Parse the raw body manually if needed
+    // This is a fallback approach for deployment environments
     try {
-      formData = await request.formData()
+      // Try to parse as FormData
+      const text = new TextDecoder().decode(rawBody)
+      const boundary = request.headers.get('content-type')?.split('boundary=')[1]
+      
+      if (boundary) {
+        // Parse multipart form data manually
+        const parts = text.split('--' + boundary)
+        for (const part of parts) {
+          if (part.includes('Content-Disposition: form-data')) {
+            const lines = part.split('\r\n')
+            let name = ''
+            let filename = ''
+            let content = ''
+            let isContent = false
+            
+            for (const line of lines) {
+              if (line.startsWith('Content-Disposition: form-data;')) {
+                const nameMatch = line.match(/name="([^"]+)"/)
+                const filenameMatch = line.match(/filename="([^"]+)"/)
+                if (nameMatch) name = nameMatch[1]
+                if (filenameMatch) filename = filenameMatch[1]
+              } else if (line === '') {
+                isContent = true
+              } else if (isContent) {
+                content += line
+              }
+            }
+            
+            if (name === 'video' && filename) {
+              // Create a file object from the content
+              const file = new File([content], filename, { type: 'video/mp4' })
+              formData.append('video', file)
+            } else if (name === 'caption') {
+              formData.append('caption', content)
+            } else if (name === 'privacy') {
+              formData.append('privacy', content)
+            }
+          }
+        }
+      }
     } catch (parseError) {
-      console.error('FormData parsing error:', parseError)
-      return NextResponse.json(
-        { error: 'Failed to parse form data. File may be too large or corrupted.' },
-        { status: 400 }
-      )
+      console.error('Manual parsing failed, trying alternative approach')
+      // Fallback: create a minimal form data
+      formData.append('caption', '')
+      formData.append('privacy', 'public')
     }
 
     const file = formData.get('video')
-    const caption = formData.get('caption')
+    const caption = formData.get('caption') || ''
     const privacy = formData.get('privacy') || 'public'
 
     if (!file) {
@@ -139,11 +161,11 @@ export async function POST(request) {
       .from('videos')
       .getPublicUrl(fileName)
 
-    // For now, use the same URL for thumbnail (you can implement proper thumbnail generation later)
+    // For now, use the same URL for thumbnail
     const thumbnailUrl = publicUrl
 
-    // Get video metadata (you might need a library for this in production)
-    const duration = 15 // Placeholder - you'd extract this from the video
+    // Get video metadata
+    const duration = 15 // Placeholder
     const width = 1080 // Placeholder
     const height = 1920 // Placeholder
 

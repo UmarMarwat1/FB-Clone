@@ -77,6 +77,25 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
         body: formData
       })
   
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        let errorMessage = 'Upload failed'
+        
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (parseError) {
+          // If we can't parse JSON, use status text
+          if (response.status === 413) {
+            errorMessage = 'File size too large. Please select a smaller video file (max 100MB).'
+          } else {
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`
+          }
+        }
+        
+        throw new Error(errorMessage)
+      }
+  
       const data = await response.json()
   
       if (data.success) {
@@ -97,7 +116,19 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
       }
     } catch (error) {
       console.error('Error uploading reel:', error)
-      alert('Failed to upload reel: ' + error.message)
+      
+      // Provide more specific error messages
+      let userMessage = error.message
+      
+      if (error.message.includes('413') || error.message.includes('Payload Too Large') || error.message.includes('File size too large')) {
+        userMessage = 'File size too large. Please select a smaller video file (max 100MB).'
+      } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        userMessage = 'Authentication failed. Please log in again.'
+      } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+        userMessage = 'Server error occurred. Please try again later.'
+      }
+      
+      alert('Failed to upload reel: ' + userMessage)
     } finally {
       setUploading(false)
       setUploadProgress(0)
