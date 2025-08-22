@@ -23,16 +23,10 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
       return
     }
 
-    // Validate file size (max 100MB for chunked uploads)
+    // Validate file size (max 100MB)
     if (file.size > 100 * 1024 * 1024) {
       alert('File size must be less than 100MB')
       return
-    }
-
-    // Show info about chunked upload for large files
-    if (file.size > 4 * 1024 * 1024) {
-      const chunks = Math.ceil(file.size / (4 * 1024 * 1024))
-      alert(`Large file detected (${(file.size / (1024 * 1024)).toFixed(1)}MB). This will be uploaded in ${chunks} chunks for better reliability.`)
     }
 
     setSelectedFile(file)
@@ -62,210 +56,82 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
     setUploadProgress(0)
   
     try {
-      // Validate file size on client side first
-      if (selectedFile.size > 100 * 1024 * 1024) {
-        throw new Error('File size too large. Please select a smaller video file (max 100MB).')
+      const formData = new FormData()
+      formData.append('video', selectedFile)
+      formData.append('caption', caption)
+      formData.append('privacy', privacy)
+  
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      
+      if (!token) {
+        throw new Error('No authentication token found')
       }
-
-      // For files larger than 4MB, use chunked upload
-      if (selectedFile.size > 4 * 1024 * 1024) {
-        await uploadLargeFile(selectedFile)
+      
+      const response = await fetch('/api/reels/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+  
+      // Check if response is ok before trying to parse JSON
+      if (!response.ok) {
+        let errorMessage = 'Upload failed'
+        
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (parseError) {
+          // If we can't parse JSON, use status text
+          if (response.status === 413) {
+            errorMessage = 'File size too large. Please select a smaller video file (max 100MB).'
+          } else {
+            errorMessage = `Upload failed: ${response.status} ${response.statusText}`
+          }
+        }
+        
+        throw new Error(errorMessage)
+      }
+  
+      const data = await response.json()
+  
+      if (data.success) {
+        alert('Reel uploaded successfully!')
+        
+        // Reset form
+        setSelectedFile(null)
+        setPreview(null)
+        setCaption('')
+        setPrivacy('public')
+        
+        if (onUploadComplete) {
+          console.log('Calling onUploadComplete with:', data.reel)
+          onUploadComplete(data.reel)
+        }
       } else {
-        // For small files, use direct upload
-        await uploadSmallFile(selectedFile)
+        throw new Error(data.error || 'Upload failed')
       }
-
-      alert('Reel uploaded successfully!')
-      
-      // Reset form
-      setSelectedFile(null)
-      setPreview(null)
-      setCaption('')
-      setPrivacy('public')
-      
     } catch (error) {
       console.error('Error uploading reel:', error)
-      alert('Failed to upload reel: ' + error.message)
+      
+      // Provide more specific error messages
+      let userMessage = error.message
+      
+      if (error.message.includes('413') || error.message.includes('Payload Too Large') || error.message.includes('File size too large')) {
+        userMessage = 'File size too large. Please select a smaller video file (max 100MB).'
+      } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        userMessage = 'Authentication failed. Please log in again.'
+      } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
+        userMessage = 'Server error occurred. Please try again later.'
+      }
+      
+      alert('Failed to upload reel: ' + userMessage)
     } finally {
       setUploading(false)
       setUploadProgress(0)
-    }
-  }
-
-  // Upload small files directly to Supabase
-  const uploadSmallFile = async (file) => {
-    const timestamp = Date.now()
-    const fileName = `${currentUser.id}/${timestamp}_${file.name}`
-
-    console.log('Starting direct upload to Supabase Storage:', {
-      fileName,
-      fileSize: file.size,
-      fileType: file.type
-    })
-
-    // Upload video directly to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('videos')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      })
-
-    if (uploadError) {
-      console.error('Upload error:', uploadError)
-      throw new Error('Failed to upload video: ' + uploadError.message)
-    }
-
-    console.log('Video uploaded successfully:', uploadData)
-
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('videos')
-      .getPublicUrl(fileName)
-
-    // For now, use the same URL for thumbnail
-    const thumbnailUrl = publicUrl
-
-    // Get video metadata (you might need a library for this in production)
-    const duration = 15 // Placeholder - you'd extract this from the video
-    const width = 1080 // Placeholder
-    const height = 1920 // Placeholder
-
-    // Create reel record in database
-    const { data: reel, error: reelError } = await supabase
-      .from('reels')
-      .insert({
-        user_id: currentUser.id,
-        caption,
-        video_url: publicUrl,
-        thumbnail_url: thumbnailUrl,
-        duration,
-        width,
-        height,
-        file_size: file.size,
-        privacy,
-        is_active: true
-      })
-      .select('*')
-      .single()
-
-    if (reelError) {
-      console.error('Reel creation error:', reelError)
-      // Clean up uploaded file if reel creation fails
-      await supabase.storage.from('videos').remove([fileName])
-      throw new Error('Failed to create reel: ' + reelError.message)
-    }
-
-    console.log('Reel created successfully:', reel)
-
-    if (onUploadComplete) {
-      console.log('Calling onUploadComplete with:', reel)
-      onUploadComplete(reel)
-    }
-  }
-
-  // Upload large files using chunked approach
-  const uploadLargeFile = async (file) => {
-    const chunkSize = 4 * 1024 * 1024 // 4MB chunks (under Vercel's 4.5MB limit)
-    const totalChunks = Math.ceil(file.size / chunkSize)
-    const timestamp = Date.now()
-    const baseFileName = `${currentUser.id}/${timestamp}_${file.name}`
-    
-    console.log('Starting chunked upload:', {
-      totalChunks,
-      chunkSize,
-      baseFileName,
-      fileSize: file.size
-    })
-
-    // Upload chunks
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * chunkSize
-      const end = Math.min(start + chunkSize, file.size)
-      const chunk = file.slice(start, end)
-      
-      const chunkFileName = `${baseFileName}.part${chunkIndex}`
-      
-      console.log(`Uploading chunk ${chunkIndex + 1}/${totalChunks}:`, {
-        chunkFileName,
-        chunkSize: chunk.size,
-        start,
-        end
-      })
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('videos')
-        .upload(chunkFileName, chunk, {
-          cacheControl: '3600',
-          upsert: false
-        })
-
-      if (uploadError) {
-        console.error('Chunk upload error:', uploadError)
-        throw new Error(`Failed to upload chunk ${chunkIndex + 1}: ${uploadError.message}`)
-      }
-
-      // Update progress
-      const progress = ((chunkIndex + 1) / totalChunks) * 100
-      setUploadProgress(progress)
-    }
-
-    // Combine chunks into final file
-    console.log('Combining chunks into final file...')
-    
-    // For now, we'll use the first chunk as the main file
-    // In a production environment, you'd want to implement proper chunk combination
-    const finalFileName = baseFileName
-    const firstChunkName = `${baseFileName}.part0`
-    
-    // Get public URL of the first chunk (temporary solution)
-    const { data: { publicUrl } } = supabase.storage
-      .from('videos')
-      .getPublicUrl(firstChunkName)
-
-    const thumbnailUrl = publicUrl
-
-    // Create reel record in database
-    const { data: reel, error: reelError } = await supabase
-      .from('reels')
-      .insert({
-        user_id: currentUser.id,
-        caption,
-        video_url: publicUrl,
-        thumbnail_url: thumbnailUrl,
-        duration: 15,
-        width: 1080,
-        height: 1920,
-        file_size: file.size,
-        privacy,
-        is_active: true
-      })
-      .select('*')
-      .single()
-
-    if (reelError) {
-      console.error('Reel creation error:', reelError)
-      // Clean up uploaded chunks if reel creation fails
-      const chunkNames = []
-      for (let i = 0; i < totalChunks; i++) {
-        chunkNames.push(`${baseFileName}.part${i}`)
-      }
-      await supabase.storage.from('videos').remove(chunkNames)
-      throw new Error('Failed to create reel: ' + reelError.message)
-    }
-
-    console.log('Reel created successfully:', reel)
-
-    // Clean up chunk files (optional - you might want to keep them for future processing)
-    // const chunkNames = []
-    // for (let i = 0; i < totalChunks; i++) {
-    //   chunkNames.push(`${baseFileName}.part${i}`)
-    // }
-    // await supabase.storage.from('videos').remove(chunkNames)
-
-    if (onUploadComplete) {
-      console.log('Calling onUploadComplete with:', reel)
-      onUploadComplete(reel)
     }
   }
 
@@ -299,12 +165,6 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
             </div>
             <h3>Select Video</h3>
             <p>Choose a video file (max 30 seconds, 100MB)</p>
-            <p className={styles.uploadInfo}>
-              <small>
-                • Files under 4MB: Direct upload<br/>
-                • Files over 4MB: Chunked upload for reliability
-              </small>
-            </p>
             <button 
               type="button" 
               className={styles.selectButton}
