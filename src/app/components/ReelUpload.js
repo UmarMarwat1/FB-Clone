@@ -56,79 +56,91 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
     setUploadProgress(0)
   
     try {
-      const formData = new FormData()
-      formData.append('video', selectedFile)
-      formData.append('caption', caption)
-      formData.append('privacy', privacy)
-  
-      // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      
-      if (!token) {
-        throw new Error('No authentication token found')
+      // Validate file size on client side first
+      if (selectedFile.size > 100 * 1024 * 1024) {
+        throw new Error('File size too large. Please select a smaller video file (max 100MB).')
       }
-      
-      const response = await fetch('/api/reels/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
+
+      // Upload directly to Supabase Storage to bypass API route limits
+      const timestamp = Date.now()
+      const fileName = `${currentUser.id}/${timestamp}_${selectedFile.name}`
+
+      console.log('Starting direct upload to Supabase Storage:', {
+        fileName,
+        fileSize: selectedFile.size,
+        fileType: selectedFile.type
       })
-  
-      // Check if response is ok before trying to parse JSON
-      if (!response.ok) {
-        let errorMessage = 'Upload failed'
-        
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.error || errorMessage
-        } catch (parseError) {
-          // If we can't parse JSON, use status text
-          if (response.status === 413) {
-            errorMessage = 'File size too large. Please select a smaller video file (max 100MB).'
-          } else {
-            errorMessage = `Upload failed: ${response.status} ${response.statusText}`
-          }
-        }
-        
-        throw new Error(errorMessage)
+
+      // Upload video directly to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('videos')
+        .upload(fileName, selectedFile, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError)
+        throw new Error('Failed to upload video: ' + uploadError.message)
       }
-  
-      const data = await response.json()
-  
-      if (data.success) {
-        alert('Reel uploaded successfully!')
-        
-        // Reset form
-        setSelectedFile(null)
-        setPreview(null)
-        setCaption('')
-        setPrivacy('public')
-        
-        if (onUploadComplete) {
-          console.log('Calling onUploadComplete with:', data.reel)
-          onUploadComplete(data.reel)
-        }
-      } else {
-        throw new Error(data.error || 'Upload failed')
+
+      console.log('Video uploaded successfully:', uploadData)
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('videos')
+        .getPublicUrl(fileName)
+
+      // For now, use the same URL for thumbnail
+      const thumbnailUrl = publicUrl
+
+      // Get video metadata (you might need a library for this in production)
+      const duration = 15 // Placeholder - you'd extract this from the video
+      const width = 1080 // Placeholder
+      const height = 1920 // Placeholder
+
+      // Create reel record in database
+      const { data: reel, error: reelError } = await supabase
+        .from('reels')
+        .insert({
+          user_id: currentUser.id,
+          caption,
+          video_url: publicUrl,
+          thumbnail_url: thumbnailUrl,
+          duration,
+          width,
+          height,
+          file_size: selectedFile.size,
+          privacy,
+          is_active: true
+        })
+        .select('*')
+        .single()
+
+      if (reelError) {
+        console.error('Reel creation error:', reelError)
+        // Clean up uploaded file if reel creation fails
+        await supabase.storage.from('videos').remove([fileName])
+        throw new Error('Failed to create reel: ' + reelError.message)
+      }
+
+      console.log('Reel created successfully:', reel)
+
+      alert('Reel uploaded successfully!')
+      
+      // Reset form
+      setSelectedFile(null)
+      setPreview(null)
+      setCaption('')
+      setPrivacy('public')
+      
+      if (onUploadComplete) {
+        console.log('Calling onUploadComplete with:', reel)
+        onUploadComplete(reel)
       }
     } catch (error) {
       console.error('Error uploading reel:', error)
-      
-      // Provide more specific error messages
-      let userMessage = error.message
-      
-      if (error.message.includes('413') || error.message.includes('Payload Too Large') || error.message.includes('File size too large')) {
-        userMessage = 'File size too large. Please select a smaller video file (max 100MB).'
-      } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-        userMessage = 'Authentication failed. Please log in again.'
-      } else if (error.message.includes('500') || error.message.includes('Internal Server Error')) {
-        userMessage = 'Server error occurred. Please try again later.'
-      }
-      
-      alert('Failed to upload reel: ' + userMessage)
+      alert('Failed to upload reel: ' + error.message)
     } finally {
       setUploading(false)
       setUploadProgress(0)
