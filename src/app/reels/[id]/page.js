@@ -8,7 +8,7 @@ import ReelComments from '../../components/ReelComments'
 import styles from '../reels.module.css'
 
 export default function SingleReelPage() {
-  const params = useParams()
+  // const params = useParams()
   const [reel, setReel] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
