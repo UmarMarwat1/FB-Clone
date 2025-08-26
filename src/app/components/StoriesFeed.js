@@ -92,26 +92,28 @@ export default function StoriesFeed({ currentUser }) {
     return `${diffHours}h ago`
   }, [])
 
-  const getStoryPreview = useCallback((story) => {
-    // Get the first media item or use a default for text-only stories
-    if (story.story_media && story.story_media.length > 0) {
-      const firstMedia = story.story_media[0]
-      if (firstMedia.media_type === 'video') {
-        return firstMedia.thumbnail_url || firstMedia.media_url
-      }
-      return firstMedia.media_url
-    }
-    
-    // For text-only stories, return user's profile picture or default avatar
-    return story.profiles?.avatar_url || '/default-avatar.svg'
-  }, [])
-
-  const isUserStory = useCallback((story) => {
-    return story.user_id === currentUser?.id
-  }, [currentUser?.id])
-
   // Group stories by user (combine multiple stories from same user)
   const groupedStories = useMemo(() => {
+    // Helper functions defined inside useMemo to avoid dependency issues
+    const getStoryPreview = (story) => {
+      // Get the first media item or use a default for text-only stories
+      if (story.story_media && story.story_media.length > 0) {
+        const firstMedia = story.story_media[0]
+        if (firstMedia.media_type === 'video') {
+          // For videos, use thumbnail if available, otherwise use user's avatar
+          return firstMedia.thumbnail_url || story.profiles?.avatar_url || '/default-avatar.svg'
+        }
+        return firstMedia.media_url
+      }
+      
+      // For text-only stories, return user's profile picture or default avatar
+      return story.profiles?.avatar_url || '/default-avatar.svg'
+    }
+
+    const isUserStory = (story) => {
+      return story.user_id === currentUser?.id
+    }
+
     // Stories are already sorted by user_id and created_at in the context
     const grouped = stories.reduce((acc, story) => {
       const existingUserIndex = acc.findIndex(group => group.user_id === story.user_id)
@@ -147,7 +149,7 @@ export default function StoriesFeed({ currentUser }) {
     })
 
     return grouped
-  }, [stories, getStoryPreview, isUserStory])
+  }, [stories, currentUser?.id])
 
   // Check scroll arrows when stories change
   useEffect(() => {

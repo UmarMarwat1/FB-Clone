@@ -113,82 +113,7 @@ export function NotificationProvider({ children }) {
     }
   }, [])
 
-  // Real-time subscription to new notifications
-  useEffect(() => {
-    let subscription = null
 
-    const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        console.log('No user found for real-time subscription')
-        return
-      }
-
-      console.log('Setting up real-time subscription for user:', user.id)
-
-      subscription = supabase
-        .channel('notifications')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
-          },
-          (payload) => {
-            console.log('Real-time notification received:', payload)
-            console.log('New notification data:', payload.new)
-            
-            // Add the new notification to the beginning of the list
-            setNotifications(prev => {
-              const newList = [payload.new, ...prev]
-              console.log('Updated notifications list:', newList)
-              return newList
-            })
-            
-            // Update unread count
-            setUnreadCount(prev => {
-              const newCount = prev + 1
-              console.log('Updated unread count:', newCount)
-              return newCount
-            })
-          }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
-          },
-          (payload) => {
-            console.log('Real-time notification update received:', payload)
-            // Update existing notification
-            setNotifications(prev => 
-              prev.map(n => n.id === payload.new.id ? payload.new : n)
-            )
-          }
-        )
-        .on('system', { event: 'disconnect' }, () => {
-          console.log('Real-time connection lost, reconnecting...')
-          setTimeout(() => setupSubscription(), 1000)
-        })
-        .subscribe()
-
-      console.log('Real-time subscription setup complete')
-    }
-
-    setupSubscription()
-
-    return () => {
-      if (subscription) {
-        console.log('Cleaning up real-time subscription')
-        supabase.removeChannel(subscription)
-      }
-    }
-  }, [])
 
   // Initial fetch
   useEffect(() => {
@@ -210,6 +135,8 @@ export function NotificationProvider({ children }) {
     console.log('Manual refresh requested')
     fetchNotifications()
   }, [fetchNotifications])
+
+
 
   const value = {
     notifications,

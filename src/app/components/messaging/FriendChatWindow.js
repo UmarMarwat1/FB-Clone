@@ -17,7 +17,7 @@ export default function FriendChatWindow({ conversation, user, onMessageSent, on
   const [isMobile, setIsMobile] = useState(false)
   const isLoadingRef = useRef(false)
   
-  const { subscribeToConversation, unsubscribeFromConversation, isConnected } = useMessaging()
+  const { subscribeToConversation, unsubscribeFromConversation } = useMessaging()
 
   // Define all functions first before using them in useEffect
   const scrollToBottom = useCallback(() => {
@@ -183,23 +183,21 @@ export default function FriendChatWindow({ conversation, user, onMessageSent, on
   }, [])
 
   useEffect(() => {
-    if (conversation?.id && isConnected) {
+    if (conversation?.id) {
       console.log('Setting up conversation:', conversation.id)
       console.log('Conversation object:', conversation)
       loadMessages()
       
-      // Subscribe to real-time updates
-      const subscription = subscribeToConversation(conversation.id, handleMessageUpdate)
+      // Real-time subscriptions disabled - using polling fallback
+      console.log('Real-time subscriptions disabled for conversation:', conversation.id)
       
-      // Cleanup subscription on unmount or conversation change
+      // Cleanup on unmount or conversation change
       return () => {
         console.log('Cleaning up conversation:', conversation.id)
-        if (subscription) {
-          unsubscribeFromConversation(conversation.id)
-        }
+        unsubscribeFromConversation(conversation.id)
       }
     }
-  }, [conversation?.id, isConnected]) // Remove problematic dependencies
+  }, [conversation?.id]) // Remove isConnected dependency
 
   // Mark messages as read when messages are loaded
   useEffect(() => {
