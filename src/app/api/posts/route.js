@@ -23,6 +23,27 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (postsError) {
+      console.error('Posts fetch error:', postsError)
+      // If profiles join fails, try without it
+      if (postsError.message.includes('profiles') || postsError.message.includes('relationship')) {
+        console.log('Profiles join failed, fetching posts without author details')
+        const { data: simplePosts, error: simpleError } = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (simpleError) {
+          return NextResponse.json({ error: simpleError.message }, { status: 500 })
+        }
+        
+        // Add default author info for posts without profiles join
+        const postsWithDefaultAuthor = simplePosts.map(post => ({
+          ...post,
+          author: { id: post.user_id, username: 'Unknown', full_name: 'Unknown User' }
+        }))
+        
+        return NextResponse.json({ posts: postsWithDefaultAuthor })
+      }
       return NextResponse.json({ error: postsError.message }, { status: 500 })
     }
 
@@ -113,7 +134,18 @@ export async function POST(request) {
 
     if (postError) {
       console.error('Create post error:', postError)
-      return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
+      // Provide more specific error messages
+      if (postError.message.includes('relation "posts" does not exist')) {
+        return NextResponse.json({ error: 'Posts table not found. Please check database setup.' }, { status: 500 })
+      }
+      if (postError.message.includes('permission denied')) {
+        return NextResponse.json({ error: 'Permission denied. Please check your authentication.' }, { status: 403 })
+      }
+      if (postError.message.includes('foreign key')) {
+        return NextResponse.json({ error: 'Invalid user reference. Please try logging in again.' }, { status: 400 })
+      }
+
+      return NextResponse.json({ error: `Failed to create post: ${postError.message}` }, { status: 500 })
     }
 
     // Insert media if provided
@@ -148,6 +180,32 @@ export async function POST(request) {
 
     if (fetchError) {
       console.error('Fetch complete post error:', fetchError)
+      // If profiles join fails, try without it
+      if (fetchError.message.includes('profiles') || fetchError.message.includes('relationship')) {
+        console.log('Profiles join failed, fetching post without author details')
+        const { data: simplePost, error: simpleError } = await supabaseUser
+          .from('posts')
+          .select('*')
+          .eq('id', post.id)
+          .single()
+        
+        if (simpleError) {
+          return NextResponse.json({ error: 'Post created but failed to fetch details' }, { status: 500 })
+        }
+        
+        // Use the simple post data
+        const postWithMedia = {
+          ...simplePost,
+          author: { id: userId, username: 'Unknown', full_name: 'Unknown User' },
+          media: []
+        }
+        
+        return NextResponse.json({ 
+          success: true,
+          post: postWithMedia,
+          message: 'Post created successfully'
+        })
+      }
       return NextResponse.json({ error: 'Post created but failed to fetch details' }, { status: 500 })
     }
 

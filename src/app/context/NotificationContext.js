@@ -29,33 +29,24 @@ export function NotificationProvider({ children }) {
 
       console.log('Fetching notifications for user:', user.id)
       
-      // First try with profiles join
+      // Try to fetch notifications without join first to avoid schema issues
       let { data, error } = await supabase
         .from('notifications')
-        .select(`
-          *,
-          sender:profiles(id, username, full_name, avatar_url)
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50)
 
-      // If profiles join fails, try without it
-      if (error && error.message.includes('profiles')) {
-        console.log('Profiles join failed, trying without join:', error.message)
-        const { data: simpleData, error: simpleError } = await supabase
-          .from('notifications')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(50)
-        
-        if (simpleError) {
-          throw simpleError
+      if (error) {
+        console.error('Error fetching notifications:', error)
+        // If notifications table doesn't exist or has issues, return empty array
+        if (error.message.includes('relation "notifications" does not exist') || 
+            error.message.includes('permission denied')) {
+          console.log('Notifications table not accessible, returning empty array')
+          data = []
+        } else {
+          throw error
         }
-        data = simpleData
-      } else if (error) {
-        throw error
       }
       
       console.log('Fetched notifications:', data)
