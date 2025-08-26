@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { supabase, getCurrentSession } from '../../../../lib/supabaseCLient'
 import StoriesFeed from '../../components/StoriesFeed'
 import { useStories } from '../../context/StoriesContext'
@@ -9,9 +9,14 @@ export default function Stories() {
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const { handleUserChange, clearCache } = useStories()
+  const hasLoadedRef = useRef(false)
 
   const getCurrentUser = useCallback(async () => {
+    // Prevent multiple calls
+    if (hasLoadedRef.current) return
+    
     try {
+      hasLoadedRef.current = true
       const session = await getCurrentSession()
       
       if (session?.user) {
@@ -30,16 +35,21 @@ export default function Stories() {
           avatar_url: profile?.avatar_url
         }
         setCurrentUser(userData)
-        handleUserChange(userData)
+        // Only call handleUserChange once
+        if (handleUserChange) {
+          handleUserChange(userData)
+        }
       }
     } catch (error) {
       console.error('Error getting current user:', error)
       // Clear cache if there's an error (user might be logged out)
-      clearCache()
+      if (clearCache) {
+        clearCache()
+      }
     } finally {
       setLoading(false)
     }
-  }, [handleUserChange, clearCache])
+  }, []) // Remove dependencies to prevent infinite loops
 
   useEffect(() => {
     getCurrentUser()

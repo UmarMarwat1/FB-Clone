@@ -40,3 +40,43 @@ a {
     color-scheme: dark;
   }
 }
+
+/* Mobile messaging body lock */
+body.messaging-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Feed media viewer body lock */
+body.media-viewer-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure proper mobile viewport */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+  }
+  
+  /* Prevent horizontal scrolling on mobile */
+  .messagingWindow,
+  .sidebar,
+  .chatArea {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Prevent horizontal scrolling on feed media viewer */
+  .mediaViewerOverlay,
+  .mediaViewerContent {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}

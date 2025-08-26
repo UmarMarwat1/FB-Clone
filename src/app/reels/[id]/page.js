@@ -18,15 +18,15 @@ export default function SingleReelPage() {
     const fetchData = async () => {
       try {
         // Get current user
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
+        const session = await getCurrentSession()
+        if (session?.user) {
           const { data: profile } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', user.id)
+            .eq('id', session.user.id)
             .single()
           
-          setCurrentUser({ ...user, ...profile })
+          setCurrentUser({ ...session.user, ...profile })
         }
 
         // Fetch reel

@@ -161,6 +161,8 @@ a.secondary {
   .fbInput {
     font-size: 18px;
     padding: 16px 14px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {
@@ -202,6 +204,8 @@ a.secondary {
   .fbInput {
     font-size: 17px;
     padding: 12px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {
@@ -252,6 +256,8 @@ a.secondary {
   .fbInput {
     font-size: 16px;
     padding: 14px 12px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {
@@ -299,6 +305,8 @@ a.secondary {
   .fbInput {
     font-size: 15px;
     padding: 12px 10px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {
@@ -386,6 +394,8 @@ a.secondary {
   .fbInput {
     font-size: 14px;
     padding: 10px 8px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {
@@ -477,6 +487,8 @@ a.secondary {
   .fbInput {
     font-size: 13px;
     padding: 8px 6px;
+    background-color: white;
+    color: black;
   }
   
   .fbButton, .fbCreateBtn, .fbForgetBtn {

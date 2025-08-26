@@ -1822,9 +1822,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 99999;
   padding: 2rem;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .mediaViewerContent {
@@ -1837,13 +1838,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 100000;
+  isolation: isolate;
 }
 
 .mediaViewerClose {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   border-radius: 50%;
@@ -1859,14 +1862,14 @@
 }
 
 .mediaViewerClose:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .mediaViewerNavBtn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   border-radius: 50%;
@@ -1883,14 +1886,14 @@
 }
 
 .mediaViewerNavBtn:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .mediaViewerCounter {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -1937,6 +1940,15 @@
     gap: 6px;
   }
   
+  .userName {
+    font-size: 15px;
+  }
+  
+  .feelingDisplay,
+  .postFeelingActivity {
+    font-size: 13px;
+  }
+  
   .singleMedia {
     max-height: 400px;
   }
@@ -1947,25 +1959,58 @@
     min-height: 250px;
   }
   
+  /* Mobile Media Viewer - Full Screen Black Background */
   .mediaViewerOverlay {
-    padding: 1rem;
+    padding: 0;
+    background: #000000;
+    border-radius: 0;
+    z-index: 99999;
+    isolation: isolate;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  
+  .mediaViewerContent {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    background: #000000;
+    z-index: 100000;
+    isolation: isolate;
+    position: relative;
   }
   
   .mediaViewerClose {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
   }
   
   .mediaViewerNavBtn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.3rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    background: rgba(255, 255, 255, 0.2);
   }
   
   .mediaViewerCounter {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .mediaViewerImage,
+  .mediaViewerVideo {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
   }
 }
 
@@ -2012,32 +2057,118 @@
     min-height: 200px;
   }
   
+  /* Small Mobile Media Viewer - Full Screen Black Background */
   .mediaViewerOverlay {
-    padding: 0.5rem;
+    padding: 0;
+    background: #000000;
+    border-radius: 0;
+    z-index: 99999;
+    isolation: isolate;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  
+  .mediaViewerContent {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    background: #000000;
+    z-index: 100000;
+    isolation: isolate;
+    position: relative;
   }
   
   .mediaViewerClose {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
-    top: 0.5rem;
-    right: 0.5rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
   }
   
   .mediaViewerNavBtn {
-    width: 32px;
-    height: 32px;
-    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    background: rgba(255, 255, 255, 0.2);
   }
   
   .mediaViewerCounter {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.6rem;
-    top: 0.5rem;
-    left: 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .mediaViewerImage,
+  .mediaViewerVideo {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
   }
   
   .moreMediaOverlay {
     font-size: 1rem;
+  }
+} 
+
+/* Ensure modal content is properly isolated */
+.mediaViewerOverlay * {
+  isolation: isolate;
+}
+
+.mediaViewerContent * {
+  isolation: isolate;
+}
+
+/* Prevent any background content from showing through */
+.mediaViewerOverlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000000;
+  z-index: -1;
+}
+
+/* Mobile-specific isolation improvements */
+@media (max-width: 768px) {
+  .mediaViewerOverlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+  }
+  
+  .mediaViewerContent {
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    z-index: 100000 !important;
+    isolation: isolate !important;
+    overflow: hidden !important;
+  }
+  
+  .mediaViewerImage,
+  .mediaViewerVideo {
+    position: relative !important;
+    z-index: 100001 !important;
+    isolation: isolate !important;
   }
 } 

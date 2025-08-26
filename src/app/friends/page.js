@@ -2,7 +2,9 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { supabase, getCurrentSession, getFriends, getFriendRequests, searchUsers, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getFriendStatus } from "../../../lib/supabaseCLient"
+import { useMessagingIntegration } from "../components/messaging/hooks/useMessagingIntegration"
 import Header from "../feed/components/Header"
+import FriendCard from "../components/messaging/FriendCard"
 import styles from "./friends.module.css"
 
 export default function FriendsPage() {
@@ -15,6 +17,9 @@ export default function FriendsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const router = useRouter()
+  
+  // Messaging integration
+  const { startChatWithFriend } = useMessagingIntegration()
 
   useEffect(() => {
     getUser()
@@ -44,13 +49,13 @@ export default function FriendsPage() {
     }
     
     setLoading(false)
-  }, [user, activeTab])
+  }, [user?.id, activeTab])
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       loadData()
     }
-  }, [user, activeTab, loadData])
+  }, [user?.id, activeTab, loadData])
 
   async function getUser() {
     const session = await getCurrentSession()
@@ -256,23 +261,13 @@ export default function FriendsPage() {
                 </div>
               ) : (
                 friends.map((friendship) => (
-                  <div key={friendship.id} className={styles.friendCard}>
-                    <div className={styles.friendInfo}>
-                      <div className={styles.friendAvatar}>
-                        {getFriendAvatar(friendship)}
-                      </div>
-                      <div className={styles.friendDetails}>
-                        <h3>{getFriendName(friendship)}</h3>
-                        <p>Friends since {new Date(friendship.created_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <button 
-                      className={styles.removeFriendBtn}
-                      onClick={() => handleRemoveFriend(friendship.id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
+                  <FriendCard
+                    key={friendship.id}
+                    friendship={friendship}
+                    currentUser={user}
+                    onStartChat={startChatWithFriend}
+                    onRemoveFriend={handleRemoveFriend}
+                  />
                 ))
               )}
             </div>

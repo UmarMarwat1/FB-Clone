@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import Image from "next/image"
-import { supabase } from "../../../../lib/supabaseCLient"
+import { supabase, getCurrentSession } from "../../../../lib/supabaseCLient"
 import MediaUploader from "../../components/MediaUploader"
 import FeelingActivitySelector from "../../components/FeelingActivitySelector"
 import styles from "../feed.module.css"
@@ -48,7 +48,7 @@ export default function CreatePost({ user, onPostCreated }) {
       }
 
       // attach access token so API can authenticate
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {

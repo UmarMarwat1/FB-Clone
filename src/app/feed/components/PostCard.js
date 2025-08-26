@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { createPortal } from "react-dom"
 import { supabase, getComments, addComment, deleteComment, getLikes, toggleLike } from "../../../../lib/supabaseCLient"
 import styles from "../feed.module.css"
 
@@ -27,6 +28,8 @@ export default function PostCard({ post, user, onPostDeleted }) {
       document.body.style.overflow = ''
       document.body.style.position = ''
       document.body.style.width = ''
+      document.body.style.height = ''
+      document.body.classList.remove('media-viewer-open')
     }
   }, [])
 
@@ -135,20 +138,33 @@ export default function PostCard({ post, user, onPostDeleted }) {
     
     setSelectedMedia(media)
     setShowMediaViewer(true)
-    // Prevent background scrolling
-    document.body.style.overflow = 'hidden'
-    document.body.style.position = 'fixed'
-    document.body.style.width = '100%'
-    document.body.style.height = '100%'
+    
+    // Prevent background scrolling on mobile
+    if (window.innerWidth <= 768) {
+      document.body.classList.add('media-viewer-open')
+    } else {
+      // For desktop, use the existing method
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.height = '100%'
+    }
   }
 
   const closeMediaViewer = () => {
     setShowMediaViewer(false)
     setSelectedMedia(null)
+    
     // Restore background scrolling
-    document.body.style.overflow = ''
-    document.body.style.position = ''
-    document.body.style.width = ''
+    if (window.innerWidth <= 768) {
+      document.body.classList.remove('media-viewer-open')
+    } else {
+      // For desktop, restore the existing method
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.height = ''
+    }
     
     // Restore scroll position after a brief delay to ensure modal is closed
     setTimeout(() => {
@@ -465,7 +481,7 @@ export default function PostCard({ post, user, onPostDeleted }) {
       )}
 
       {/* Media Viewer Modal */}
-      {showMediaViewer && selectedMedia && (
+      {showMediaViewer && selectedMedia && typeof document !== 'undefined' && createPortal(
         <div className={styles.mediaViewerOverlay} onClick={closeMediaViewer}>
           <div className={styles.mediaViewerContent} onClick={(e) => e.stopPropagation()}>
             <button 
@@ -529,7 +545,8 @@ export default function PostCard({ post, user, onPostDeleted }) {
               />
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

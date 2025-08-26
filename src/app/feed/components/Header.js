@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase, getCurrentSession } from "../../../../lib/supabaseCLient"
 import styles from "../feed.module.css"
+import NotificationBell from "../../components/NotificationBell"
 
 export default function Header({ user, setUser }) {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
@@ -61,8 +62,19 @@ export default function Header({ user, setUser }) {
           >
             Reels
           </button>
-          <button className={styles.headerBtn}>Messages</button>
-          <button className={styles.headerBtn}>Notifications</button>
+          <button 
+            className={styles.headerBtn}
+            onClick={() => router.push('/test-notifications')}
+          >
+            Test Notifications
+          </button>
+          <button 
+            className={styles.headerBtn}
+            onClick={() => router.push('/messages')}
+          >
+            Messages
+          </button>
+          <NotificationBell />
           <div className={styles.profileDropdownContainer}>
             <button 
               className={styles.profileBtn}
