@@ -193,7 +193,10 @@ export async function POST(request) {
       `)
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('Reel creation error:', error)
+      throw error
+    }
 
     return NextResponse.json({ reel, success: true })
   } catch (error) {
