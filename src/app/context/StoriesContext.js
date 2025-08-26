@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'
 import { supabase, getFriends } from '../../../lib/supabaseCLient'
 import { checkDatabaseTables, checkStorageAccess } from '../utils/checkDatabase'
 
@@ -329,29 +329,33 @@ export function StoriesProvider({ children }) {
     return fetchStories(true) // Force refresh
   }
 
-  const clearCache = () => {
+  const clearCache = useCallback(() => {
     console.log('Clearing stories cache')
     setStories([])
     setLastFetchTime(null)
     setError(null)
-  }
+  }, [])
 
   // Enhanced cache cleanup with user context
-  const clearCacheForUser = (userId) => {
+  const clearCacheForUser = useCallback((userId) => {
     console.log(`Clearing stories cache for user: ${userId}`)
     setStories([])
     setLastFetchTime(null)
     setError(null)
-  }
+  }, [])
 
   // Clean up cache when user changes
-  const handleUserChange = (newUser) => {
+  const handleUserChange = useCallback((newUser) => {
+    // Use ref to prevent infinite loops
     if (currentUser && newUser && currentUser.id !== newUser.id) {
       console.log('User changed, clearing cache')
       clearCache()
     }
-    setCurrentUser(newUser)
-  }
+    // Only update if user actually changed
+    if (currentUser?.id !== newUser?.id) {
+      setCurrentUser(newUser)
+    }
+  }, [currentUser?.id, clearCache])
 
   // Periodic cache cleanup - re-enabled with longer interval
   useEffect(() => {
@@ -382,7 +386,7 @@ export function StoriesProvider({ children }) {
       console.log('StoriesContext unmounting, clearing cache')
       clearCache()
     }
-  }, [])
+  }, [clearCache])
 
   // Cache cleanup on app visibility change - REMOVED to fix disappearing stories
   // The aggressive cache clearing was causing stories to disappear when users switched tabs

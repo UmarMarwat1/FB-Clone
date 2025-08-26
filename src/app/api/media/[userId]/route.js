@@ -45,6 +45,26 @@ export async function GET(request, { params }) {
       }
     }
 
+    // Get media from user_media table (including archived profile photos)
+    try {
+      const { data: userMedia, error: userMediaError } = await supabase
+        .from("user_media")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false });
+
+      if (userMediaError) {
+        console.warn("User media fetch error:", userMediaError);
+      } else if (userMedia && userMedia.length > 0) {
+        // Add user media to the collection
+        media = [...media, ...userMedia];
+      }
+    } catch (err) {
+      console.warn("Error fetching from user_media table:", err);
+      // Continue without user_media if there's an error
+    }
+
     // Get profile photos (avatar and cover) from profiles table
     const { data: profile, error: profileError } = await supabase
       .from("profiles")

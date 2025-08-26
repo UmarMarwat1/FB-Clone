@@ -4,7 +4,7 @@ import { getCurrentSession } from "../../../../lib/supabaseCLient";
 import DatePicker from "../DatePicker";
 import styles from "./AboutSection.module.css";
 
-export default function AboutSection({ userId, isOwner, onUpdate, compact = false }) {
+export default function AboutSection({ userId, isOwner, onUpdate, compact = false, mobile = false }) {
   const [profile, setProfile] = useState(null);
   const [education, setEducation] = useState([]);
   const [work, setWork] = useState([]);
@@ -633,7 +633,7 @@ export default function AboutSection({ userId, isOwner, onUpdate, compact = fals
         </div>
 
         {/* Intro Section */}
-        <div className={styles.introSection}>
+        <div className={`${styles.introSection} ${mobile ? styles.mobile : ''}`}>
           <h3 className={styles.introTitle}>Intro</h3>
           <div className={styles.introItems}>
             {profile?.bio && (
@@ -732,7 +732,7 @@ export default function AboutSection({ userId, isOwner, onUpdate, compact = fals
   }
 
   return (
-    <div className={`${styles.aboutContainer} ${compact ? styles.compact : ''}`}>
+    <div className={`${styles.aboutContainer} ${compact ? styles.compact : ''} ${mobile ? styles.mobile : ''}`}>
       {renderIntroSection()}
       {renderBasicInfo()}
       {renderEducation()}

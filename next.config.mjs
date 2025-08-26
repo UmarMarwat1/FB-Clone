@@ -11,9 +11,6 @@ const nextConfig = {
     ],
   },
   serverExternalPackages: ['@supabase/supabase-js'],
-  experimental: {
-    serverComponentsExternalPackages: ['@supabase/supabase-js']
-  },
   // Configure for large file uploads in deployment
   async headers() {
     return [

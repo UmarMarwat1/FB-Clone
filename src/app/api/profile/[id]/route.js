@@ -95,6 +95,21 @@ export async function GET(request, { params }) {
       }
     }
     
+    // Count archived photos from user_media table
+    try {
+      const { count: archivedPhotosCount } = await adminSupabase
+        .from("user_media")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", id)
+        .eq("is_public", true);
+      
+      photosCount += archivedPhotosCount || 0;
+      console.log("Archived photos count:", archivedPhotosCount);
+    } catch (err) {
+      console.warn("Error counting archived photos:", err);
+      // Continue without archived photos count if there's an error
+    }
+    
     // Count profile photos (avatar and cover)
     let profilePhotosCount = 0;
     if (profile.avatar_url) profilePhotosCount++;

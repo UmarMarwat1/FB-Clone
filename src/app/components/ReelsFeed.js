@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import ReelPlayer from './ReelPlayer'
 import ReelComments from './ReelComments'
 import { useComments } from '../context/CommentsContext'
@@ -27,7 +27,7 @@ export default function ReelsFeed({ currentUser }) {
       setLoading(true)
       
       // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {
@@ -168,7 +168,7 @@ export default function ReelsFeed({ currentUser }) {
 
   const handleLike = async (reelId, likeType) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {
@@ -216,7 +216,7 @@ export default function ReelsFeed({ currentUser }) {
 
   const handleShare = async (reelId) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {

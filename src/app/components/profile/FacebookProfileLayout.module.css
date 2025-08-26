@@ -21,6 +21,16 @@
   padding: 0;
 }
 
+/* Desktop Layout */
+.desktopLayout {
+  display: block;
+}
+
+/* Mobile Layout Wrapper */
+.mobileLayoutWrapper {
+  display: none;
+}
+
 /* Two Column Layout for Posts Tab */
 .twoColumnLayout {
   display: grid;
@@ -42,6 +52,31 @@
   min-width: 0; /* Prevents flex items from overflowing */
 }
 
+/* Mobile Layout Styles */
+.mobileLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.mobileProfileSections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0;
+  background: transparent;
+  margin-bottom: 16px;
+}
+
+.mobilePostsSection {
+  /* background: #fff; */
+  border-radius: 8px;
+  margin: 0 10px 16px 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .twoColumnLayout {
@@ -52,18 +87,28 @@
 }
 
 @media (max-width: 992px) {
-  .twoColumnLayout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 0 16px;
+  .desktopLayout {
+    display: none;
   }
   
-  .leftColumn {
-    order: 2;
+  .mobileLayoutWrapper {
+    display: block;
   }
   
-  .rightColumn {
-    order: 1;
+  .contentContainer {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .mobileProfileSections {
+    padding: 16px;
+    margin: 0 0 16px 0;
+    border-radius: 0;
+  }
+  
+  .mobilePostsSection {
+    margin: 0 0 16px 0;
+    border-radius: 0;
   }
 }
 
@@ -72,9 +117,13 @@
     padding: 0;
   }
   
-  .twoColumnLayout {
+  .mobileProfileSections {
+    padding: 12px;
     gap: 12px;
-    padding: 0 12px;
+  }
+  
+  .mobilePostsSection {
+    margin: 0 0 12px 0;
   }
 }
 
@@ -83,8 +132,13 @@
     padding: 0;
   }
   
-  .twoColumnLayout {
-    padding: 0 8px;
+  .mobileProfileSections {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .mobilePostsSection {
+    margin: 0 0 10px 0;
   }
   
   .headerContainer {

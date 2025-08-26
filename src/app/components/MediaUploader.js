@@ -1,7 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import Image from 'next/image'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import styles from './mediaUploader.module.css'
 
 export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
@@ -131,7 +131,7 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
 
     try {
       // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       
       if (!session) {
         alert('Please log in to upload files')

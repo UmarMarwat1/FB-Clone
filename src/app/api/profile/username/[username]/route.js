@@ -12,14 +12,37 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Get profile by username
-    const { data: profile, error } = await supabase
+    // Get profile by username - handle multiple possible formats
+    let { data: profile, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("username", username)
       .single();
 
-    if (error) {
+    // If exact match fails, try case-insensitive search and handle trailing spaces
+    if (error && error.code === 'PGRST116') {
+      // Try searching with trimmed username and also check for trailing spaces
+      const { data: profiles, error: searchError } = await supabase
+        .from("profiles")
+        .select("*")
+        .or(`username.ilike.${username}%,username.ilike.%${username}`)
+        .limit(5);
+      
+      if (profiles && profiles.length > 0) {
+        // Find the best match (exact match or closest match)
+        const exactMatch = profiles.find(p => p.username === username);
+        const trimmedMatch = profiles.find(p => p.username?.trim() === username);
+        const bestMatch = exactMatch || trimmedMatch || profiles[0];
+        
+        profile = bestMatch;
+        error = null;
+        console.log(`Found profile with username: "${bestMatch.username}" (original query: "${username}")`);
+      } else {
+        error = searchError || { message: "Profile not found" };
+      }
+    }
+
+    if (error || !profile) {
       console.error("Profile fetch error:", error);
       return NextResponse.json(
         { success: false, error: "Profile not found" },
@@ -69,6 +92,21 @@ export async function GET(request, { params }) {
         photosCount += mediaCount || 0;
         console.log("Post media count:", mediaCount);
       }
+    }
+    
+    // Count archived photos from user_media table
+    try {
+      const { count: archivedPhotosCount } = await supabase
+        .from("user_media")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", profile.id)
+        .eq("is_public", true);
+      
+      photosCount += archivedPhotosCount || 0;
+      console.log("Archived photos count:", archivedPhotosCount);
+    } catch (err) {
+      console.warn("Error counting archived photos:", err);
+      // Continue without archived photos count if there's an error
     }
     
     // Count profile photos (avatar and cover)

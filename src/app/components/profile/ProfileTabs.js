@@ -31,25 +31,10 @@ export default function ProfileTabs({ activeTab, onTabChange, profile }) {
     router.replace(newUrl.pathname + newUrl.search, { scroll: false });
   };
 
-  const getTabCount = (tabId) => {
-    switch (tabId) {
-      case "posts":
-        return profile?.posts_count || 0;
-      case "friends":
-        return profile?.friends_count || 0;
-      case "photos":
-        console.log("Photos count for profile:", profile?.photos_count, "Profile:", profile);
-        return profile?.photos_count || 0;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className={styles.tabsContainer}>
       <div className={styles.tabsList}>
         {tabs.map((tab) => {
-          const count = getTabCount(tab.id);
           const isActive = activeTab === tab.id;
           
           return (
@@ -60,9 +45,6 @@ export default function ProfileTabs({ activeTab, onTabChange, profile }) {
             >
               <span className={styles.tabIcon}>{tab.icon}</span>
               <span className={styles.tabLabel}>{tab.label}</span>
-              {count !== null && (
-                <span className={styles.tabCount}>({count})</span>
-              )}
             </button>
           );
         })}

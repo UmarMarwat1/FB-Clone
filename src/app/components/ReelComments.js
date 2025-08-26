@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import styles from './reels.module.css'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import EmojiPicker from 'emoji-picker-react'
 
 export default function ReelComments({ reelId, currentUser, onClose, onCommentAdded }) {
@@ -52,7 +52,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
   const fetchComments = async () => {
     try {
       // Get session token for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments`, {
@@ -86,7 +86,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
 
     try {
       // Get session token for authentication
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments`, {
@@ -131,7 +131,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
     setSubmitting(true)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments`, {
@@ -178,7 +178,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
 
     setSubmitting(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments/${commentId}`, {
@@ -216,7 +216,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
 
     setSubmitting(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments/${replyId}`, {
@@ -256,7 +256,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
     if (!confirm('Are you sure you want to delete this comment?')) return
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments/${commentId}`, {
@@ -285,7 +285,7 @@ export default function ReelComments({ reelId, currentUser, onClose, onCommentAd
     if (!confirm('Are you sure you want to delete this reply?')) return
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       const response = await fetch(`/api/reels/${reelId}/comments/${replyId}`, {

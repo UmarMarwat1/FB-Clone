@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { supabase, getCurrentSession } from "../../../lib/supabaseCLient"
 import Chatbot from "./Chatbot"
@@ -10,6 +10,7 @@ export default function ChatbotWrapper() {
   const [loading, setLoading] = useState(true)
   const pathname = usePathname()
   const { commentsOpen } = useComments()
+  const userRef = useRef(null)
 
   useEffect(() => {
     getUser()
@@ -17,10 +18,10 @@ export default function ChatbotWrapper() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session?.user) {
-          setUser(session.user)
-        } else {
-          setUser(null)
+        // Only update if user actually changed to prevent infinite loops
+        if (session?.user?.id !== userRef.current?.id) {
+          userRef.current = session?.user || null
+          setUser(session?.user || null)
         }
         setLoading(false)
       }
@@ -32,7 +33,9 @@ export default function ChatbotWrapper() {
   async function getUser() {
     try {
       const session = await getCurrentSession()
-      setUser(session?.user || null)
+      const currentUser = session?.user || null
+      userRef.current = currentUser
+      setUser(currentUser)
     } catch (error) {
       console.error("Error getting user:", error)
     } finally {

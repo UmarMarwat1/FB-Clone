@@ -5,91 +5,311 @@
   max-width: 680px;
 }
 
-/* Post Creator Section */
-.postCreator {
+/* Create Post Section */
+.createPostSection {
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
+  margin-right: 8px;
+  margin-top: 16px;
+  z-index: 1;
+  position: relative;
 }
 
-.postCreatorHeader {
+.createPostHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
-.postCreatorAvatar {
+.userAvatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
-  background: #f3f4f6;
+  background: #1877f2;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
 }
 
-.postCreatorInput {
+.createPostInput {
   flex: 1;
   background: #f0f2f5;
   border: none;
   border-radius: 20px;
   padding: 12px 16px;
-  font-size: 1rem;
-  color: #1c1e21;
-  cursor: pointer;
-}
-
-.postCreatorInput::placeholder {
+  font-size: 15px;
   color: #65676b;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
 }
 
-.postCreatorInput:focus {
-  outline: none;
-  background: #e4e6ea;
+.createPostInput:hover {
+  background: #e4e6eb;
 }
 
-.postCreatorActions {
-  display: flex;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #e4e6ea;
-}
-
-.postCreatorAction {
+/* Post Form Modal */
+.postFormOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  flex: 1;
   justify-content: center;
+  z-index: 99999;
 }
 
-.postCreatorAction:hover {
+.postForm {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.postFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.postFormHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #050505;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #65676b;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.closeBtn:hover {
   background: #f0f2f5;
 }
 
-.postCreatorAction.liveVideo {
-  color: #e41e3f;
+.postUserHeader {
+  margin-bottom: 16px;
 }
 
-.postCreatorAction.photoVideo {
-  color: #45bd62;
+.postUserInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.postCreatorAction.lifeEvent {
-  color: #f7b928;
+.userDetails {
+  display: flex;
+  flex-direction: column;
 }
 
-.postCreatorActionIcon {
-  font-size: 1.1rem;
+.userName {
+  font-weight: 600;
+  color: #050505;
+  font-size: 15px;
+}
+
+.feelingDisplay {
+  font-size: 13px;
+  color: #65676b;
+  margin-top: 2px;
+}
+
+.postTextarea {
+  width: 100%;
+  min-height: 120px;
+  border: none;
+  resize: vertical;
+  font-size: 16px;
+  font-family: inherit;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f0f2f5;
+  margin-bottom: 16px;
+  color: #000;
+}
+
+.postTextarea:focus {
+  outline: none;
+  background: #fff;
+  box-shadow: 0 0 0 2px #1877f2;
+}
+
+.postOption {
+  margin-bottom: 16px;
+}
+
+.addMediaBtn {
+  width: 100%;
+  background: #f0f2f5;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #65676b;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.addMediaBtn:hover {
+  background: #e4e6eb;
+}
+
+/* Media Preview */
+.mediaPreview {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.mediaPreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #65676b;
+}
+
+.removeMediaBtn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.removeMediaBtn:hover {
+  background: #c82333;
+}
+
+.mediaPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.mediaPreviewItem {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mediaPreviewItem img,
+.mediaPreviewItem video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoPreviewItem {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoIcon {
+  font-size: 20px;
+  color: white;
+}
+
+.moreMediaOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.error {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.postFormActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.postSubmitBtn {
+  background: #1877f2;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.postSubmitBtn:hover:not(:disabled) {
+  background: #166fe5;
+}
+
+.postSubmitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.postCancelBtn {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.postCancelBtn:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.postCancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Posts Header */
@@ -305,19 +525,66 @@
 }
 
 /* Responsive Design */
+@media (max-width: 992px) {
+  .postsContainer {
+    margin: 0px 10px;
+    max-width: calc(100% - 20px);
+  }
+  
+  .createPostSection {
+    margin: 0 10px 16px 10px;
+  }
+  
+  .postCreator {
+    margin-bottom: 16px;
+    margin-left: 16px;
+    margin-right: 14px;
+  }
+  
+  .postsHeader {
+    margin-bottom: 16px;
+    margin-left: 16px;
+    margin-right: 14px;
+  }
+  
+  .postsList {
+    gap: 16px;
+    margin-left: 16px;
+    margin-right: 14px;
+  }
+  
+  .postForm {
+    width: 95%;
+    max-width: 450px;
+    padding: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .postsContainer {
-    padding: 0 16px;
+    margin: 0 10px;
+    max-width: calc(100% - 20px);
+  }
+  
+  .createPostSection {
+    margin: 0 10px 12px 10px;
+    padding: 12px;
   }
   
   .postCreator {
     margin-bottom: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
   }
   
   .postsHeader {
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+    margin-bottom: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
+    padding: 12px 16px;
   }
   
   .postsHeader h2 {
@@ -336,6 +603,8 @@
   
   .postsList {
     gap: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
   }
   
   .emptyContainer {
@@ -353,15 +622,39 @@
   .emptyContainer p {
     font-size: 0.95rem;
   }
+  
+  .postForm {
+    width: 98%;
+    max-width: 400px;
+    padding: 12px;
+  }
+  
+  .postFormHeader h3 {
+    font-size: 16px;
+  }
+  
+  .postTextarea {
+    min-height: 100px;
+    font-size: 14px;
+  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 680px) {
   .postsContainer {
-    padding: 0 12px;
+    margin: 0 10px;
+    max-width: calc(100% - 20px);
+  }
+  
+  .createPostSection {
+    margin: 0 10px 12px 10px;
+    padding: 10px;
   }
   
   .postCreator {
     padding: 12px;
+    margin-bottom: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
   }
   
   .postCreatorActions {
@@ -371,6 +664,13 @@
   
   .postCreatorAction {
     justify-content: flex-start;
+  }
+  
+  .postsHeader {
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
   }
   
   .postsHeader h2 {
@@ -384,6 +684,8 @@
   
   .postsList {
     gap: 12px;
+    margin-left: 16px;
+    margin-right: 14px;
   }
   
   .loadingContainer, .emptyContainer {
@@ -401,5 +703,34 @@
   .loadMoreBtn {
     padding: 10px 20px;
     font-size: 0.9rem;
+  }
+  
+  .postForm {
+    width: 100%;
+    max-width: none;
+    margin: 10px;
+    border-radius: 8px;
+  }
+  
+  .postFormHeader h3 {
+    font-size: 16px;
+  }
+  
+  .postTextarea {
+    min-height: 80px;
+    font-size: 14px;
+  }
+  
+  .postFormActions {
+    flex-direction: column;
+  }
+  
+  .postSubmitBtn,
+  .postCancelBtn {
+    width: 100%;
+  }
+  
+  .mediaPreviewGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import styles from '../reels/upload/upload.module.css'
 
 export default function ReelUpload({ currentUser, onUploadComplete }) {
@@ -62,7 +62,7 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
       formData.append('privacy', privacy)
   
       // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {

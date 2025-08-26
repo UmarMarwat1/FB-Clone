@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "./MediaSection.module.css";
 
-export default function MediaSection({ userId, isOwner, compact = false }) {
+export default function MediaSection({ userId, isOwner, compact = false, mobile = false }) {
   const [media, setMedia] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -88,7 +88,7 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
   if (compact) {
     if (loading) {
       return (
-        <div className={`${styles.mediaContainer} ${styles.compact}`}>
+        <div className={`${styles.mediaContainer} ${styles.compact} ${mobile ? styles.mobile : ''}`}>
           <div className={styles.sectionHeader}>
             <h3>Photos</h3>
           </div>
@@ -102,7 +102,7 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
 
     if (error) {
       return (
-        <div className={`${styles.mediaContainer} ${styles.compact}`}>
+        <div className={`${styles.mediaContainer} ${styles.compact} ${mobile ? styles.mobile : ''}`}>
           <div className={styles.sectionHeader}>
             <h3>Photos</h3>
           </div>
@@ -114,35 +114,33 @@ export default function MediaSection({ userId, isOwner, compact = false }) {
     }
 
     return (
-      <div className={`${styles.mediaContainer} ${styles.compact}`}>
+      <div className={`${styles.mediaContainer} ${styles.compact} ${mobile ? styles.mobile : ''}`}>
         <div className={styles.sectionHeader}>
           <h3>Photos</h3>
           {isOwner && (
-            <button className={styles.addMediaBtn}>
-              + Add Photos
+            <button className={styles.addPhotoBtn}>
+              <span className={styles.addPhotoIcon}>+</span>
+              Add Photo
             </button>
           )}
         </div>
         
         {media.length === 0 ? (
-          <div className={styles.emptyContainer}>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyStateIcon}>📷</div>
             <p>No photos yet</p>
+            {isOwner && (
+              <button className={styles.addPhotoBtn}>
+                <span className={styles.addPhotoIcon}>+</span>
+                Add Your First Photo
+              </button>
+            )}
           </div>
         ) : (
-          <div className={styles.compactMediaGrid}>
-            {media.slice(0, 6).map((item) => (
-              <div key={item.id} className={styles.compactMediaItem}>
-                <Image 
-                  src={item.media_url} 
-                  alt={item.title || "Photo"} 
-                  width={80}
-                  height={80}
-                  className={styles.compactMediaThumbnail}
-                />
-              </div>
-            ))}
+          <div className={styles.mediaGrid}>
+            {media.slice(0, 6).map(renderMediaItem)}
             {media.length > 6 && (
-              <div className={styles.morePhotos}>
+              <div className={styles.mediaMore}>
                 <span>+{media.length - 6} more</span>
               </div>
             )}

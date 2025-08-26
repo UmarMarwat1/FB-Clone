@@ -59,6 +59,45 @@ export default function FacebookProfileLayout({
     }
   };
 
+  const renderMobileLayout = () => {
+    return (
+      <div className={styles.mobileLayout}>
+        {/* Mobile Profile Sections */}
+        <div className={styles.mobileProfileSections}>
+          <AboutSection 
+            userId={profile.id} 
+            isOwner={isOwner} 
+            onUpdate={onProfileUpdate}
+            compact={true}
+            mobile={true}
+          />
+          <MediaSection 
+            userId={profile.id} 
+            isOwner={isOwner}
+            compact={true}
+            mobile={true}
+          />
+          <FriendsSection 
+            userId={profile.id} 
+            currentUserId={currentUser?.id} 
+            isOwner={isOwner}
+            compact={true}
+            mobile={true}
+          />
+        </div>
+        
+        {/* Mobile Posts Section */}
+        <div className={styles.mobilePostsSection}>
+          <UserPostsSection 
+            userId={profile.id} 
+            isOwner={isOwner} 
+            currentUser={currentUser}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.profileLayout}>
       <div className={styles.headerContainer}>
@@ -77,7 +116,15 @@ export default function FacebookProfileLayout({
       </div>
       
       <div className={styles.contentContainer}>
-        {renderMainContent()}
+        {/* Desktop Layout */}
+        <div className={styles.desktopLayout}>
+          {renderMainContent()}
+        </div>
+        
+        {/* Mobile Layout */}
+        <div className={styles.mobileLayoutWrapper}>
+          {renderMobileLayout()}
+        </div>
       </div>
     </div>
   );

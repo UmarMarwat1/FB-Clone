@@ -1,7 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '../../../lib/supabaseCLient'
+import { supabase, getCurrentSession } from '../../../lib/supabaseCLient'
 import styles from './reels.module.css'
 
 export default function ReelPlayer({ 
@@ -43,7 +43,7 @@ export default function ReelPlayer({
       if (!currentUser || !reel) return;
       
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const session = await getCurrentSession()
         const token = session?.access_token
         
         if (!token) return;
@@ -72,7 +72,7 @@ export default function ReelPlayer({
       if (!currentUser || !reel?.profiles?.id) return;
       
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const session = await getCurrentSession()
         const token = session?.access_token
         
         if (!token) return;
@@ -106,7 +106,7 @@ export default function ReelPlayer({
     if (!currentUser || !reel) return;
     
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) return;
@@ -354,7 +354,7 @@ export default function ReelPlayer({
     if (!userId || !currentUser) return
     
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {
@@ -429,7 +429,7 @@ export default function ReelPlayer({
     }
     
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getCurrentSession()
       const token = session?.access_token
       
       if (!token) {

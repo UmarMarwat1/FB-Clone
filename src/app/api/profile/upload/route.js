@@ -36,7 +36,8 @@ function createAuthenticatedClient(request) {
 
 export async function POST(request) {
   try {
-    console.log("Upload API called");
+    console.log("🚀 PROFILE UPLOAD API CALLED - NEW VERSION WITH ARCHIVING");
+    console.log("==========================================================");
     
     // Check if authorization header exists
     const authHeader = request.headers.get('authorization');
@@ -48,7 +49,7 @@ export async function POST(request) {
     const userId = formData.get("userId");
     const type = formData.get("type"); // 'avatar' or 'cover'
     
-    console.log("Upload request data:", {
+    console.log("📁 Upload request data:", {
       fileName: file?.name,
       fileSize: file?.size,
       fileType: file?.type,
@@ -87,21 +88,6 @@ export async function POST(request) {
       );
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${userId}/${type}_${timestamp}_${randomString}.${fileExtension}`;
-    
-    console.log("Generated filename details:", {
-      userId,
-      type,
-      timestamp,
-      randomString,
-      fileExtension,
-      finalFileName: fileName
-    });
-
     // Create authenticated Supabase client for profile updates
     const authenticatedSupabase = createAuthenticatedClient(request);
     
@@ -138,6 +124,96 @@ export async function POST(request) {
         { status: 403 }
       );
     }
+
+    // Get current profile to save old avatar/cover before updating
+    const { data: currentProfile, error: profileError } = await authenticatedSupabase
+      .from("profiles")
+      .select("avatar_url, cover_url")
+      .eq("id", userId)
+      .single();
+
+    if (profileError) {
+      console.error("Failed to get current profile:", profileError);
+      return NextResponse.json(
+        { success: false, error: "Failed to get current profile" },
+        { status: 500 }
+      );
+    }
+
+    console.log("Current profile data:", {
+      userId,
+      type,
+      currentAvatarUrl: currentProfile.avatar_url,
+      currentCoverUrl: currentProfile.cover_url
+    });
+
+    // Save old avatar/cover to user_media table before updating
+    const oldPhotoUrl = type === "avatar" ? currentProfile.avatar_url : currentProfile.cover_url;
+    console.log("Old photo URL to archive:", oldPhotoUrl);
+    
+    if (oldPhotoUrl) {
+      try {
+        console.log("Attempting to save old photo to user_media table...");
+        
+        // First, test if we can access the user_media table
+        console.log("🔍 Testing user_media table access...");
+        const { data: testData, error: testError } = await authenticatedSupabase
+          .from("user_media")
+          .select("id")
+          .limit(1);
+        
+        if (testError) {
+          console.error("❌ Cannot access user_media table:", testError);
+          console.error("Table access error details:", JSON.stringify(testError, null, 2));
+        } else {
+          console.log("✅ user_media table is accessible");
+        }
+        
+        // Save old photo to user_media table so it remains in photos section
+        const { data: mediaData, error: mediaError } = await authenticatedSupabase
+          .from("user_media")
+          .insert([{
+            user_id: userId,
+            album_id: null,
+            media_url: oldPhotoUrl,
+            media_type: 'image',
+            title: type === "avatar" ? 'Previous Profile Avatar' : 'Previous Cover Photo',
+            description: `Previous ${type === "avatar" ? "profile avatar" : "cover photo"} from ${new Date().toLocaleDateString()}`,
+            is_public: true,
+            source: 'profile_archive'
+          }])
+          .select();
+
+        if (mediaError) {
+          console.error("Failed to save old photo to user_media:", mediaError);
+          console.error("Media insert error details:", JSON.stringify(mediaError, null, 2));
+          // Don't fail the upload, just log the warning
+        } else {
+          console.log(`Old ${type} photo saved to user_media table successfully:`, mediaData);
+        }
+      } catch (err) {
+        console.error("Error saving old photo to user_media:", err);
+        console.error("Exception details:", JSON.stringify(err, null, 2));
+        // Don't fail the upload, just log the warning
+      }
+    } else {
+      console.log(`No existing ${type} URL found to archive`);
+    }
+
+    // Generate unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = file.name.split('.').pop();
+    const fileName = `${userId}/${type}_${timestamp}_${randomString}.${fileExtension}`;
+    
+    console.log("Generated filename details:", {
+      userId,
+      type,
+      timestamp,
+      randomString,
+      fileExtension,
+      finalFileName: fileName
+    });
 
     // Determine bucket based on type (now that buckets exist)
     const bucket = type === "avatar" ? "avatars" : "covers";
@@ -199,7 +275,32 @@ export async function POST(request) {
       );
     }
 
-
+    // After successful update, delete the old file from storage
+    if (oldPhotoUrl) {
+      try {
+        // Extract the file path from the old URL
+        const oldUrlParts = oldPhotoUrl.split('/');
+        const oldFileName = oldUrlParts[oldUrlParts.length - 1];
+        const oldFilePath = `${userId}/${oldFileName}`;
+        
+        console.log(`Attempting to delete old ${type} file:`, oldFilePath);
+        
+        // Delete old file from storage
+        const { error: deleteError } = await serviceSupabase.storage
+          .from(bucket)
+          .remove([oldFilePath]);
+        
+        if (deleteError) {
+          console.warn(`Failed to delete old ${type} file:`, deleteError);
+          // Don't fail the operation, just log the warning
+        } else {
+          console.log(`Old ${type} file deleted successfully:`, oldFilePath);
+        }
+      } catch (err) {
+        console.warn(`Error deleting old ${type} file:`, err);
+        // Don't fail the operation, just log the warning
+      }
+    }
 
     return NextResponse.json({
       success: true,
