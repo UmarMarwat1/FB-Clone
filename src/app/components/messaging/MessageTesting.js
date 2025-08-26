@@ -266,7 +266,7 @@ export default function MessageTesting({ onClose }) {
         <h4>Test Results ({testResults.length})</h4>
         
         {testResults.length === 0 ? (
-          <p className={styles.noResults}>No test results yet. Click "Run All Tests" to start.</p>
+          <p className={styles.noResults}>No test results yet. Click &quot;Run All Tests&quot; to start.</p>
         ) : (
           <div className={styles.resultsList}>
             {testResults.map((result) => (

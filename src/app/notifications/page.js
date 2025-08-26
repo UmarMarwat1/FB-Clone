@@ -104,7 +104,7 @@ export default function NotificationsPage() {
           <div className={styles.emptyState}>
             <div className={styles.emptyIcon}>🔔</div>
             <h2>No notifications yet</h2>
-            <p>When you receive notifications, they'll appear here.</p>
+            <p>When you receive notifications, they&apos;ll appear here.</p>
             <button onClick={handleBackToFeed} className={styles.backToFeedButton}>
               Go to Feed
             </button>

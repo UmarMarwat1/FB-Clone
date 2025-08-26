@@ -62,12 +62,7 @@ export default function Header({ user, setUser }) {
           >
             Reels
           </button>
-          <button 
-            className={styles.headerBtn}
-            onClick={() => router.push('/test-notifications')}
-          >
-            Test Notifications
-          </button>
+
           <button 
             className={styles.headerBtn}
             onClick={() => router.push('/messages')}
