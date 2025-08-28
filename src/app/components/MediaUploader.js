@@ -201,9 +201,8 @@ export default function MediaUploader({ onMediaChange, maxFiles = 10 }) {
             Select Files
           </button>
           <p className={styles.fileInfo}>
-            Support: JPG, PNG, GIF, MP4, WebM (Max: {maxFiles} files, 50MB each)
+            Support: JPG, PNG, GIF, MP4, WebM (Max: {maxFiles} files, 1MB each for images and 4.5mb for videos)
             <br />
-            <small>✨ Files upload automatically when selected</small>
           </p>
         </div>
       </div>

@@ -296,34 +296,10 @@ export default function FriendsSection({ userId, currentUserId, isOwner, compact
               Add Friend
             </button>
           )}
-          {/* Test button - remove after testing */}
-          {process.env.NODE_ENV === 'development' && (
-            <button 
-              onClick={() => {
-                console.log("Testing getFriends function...");
-                fetchAllData();
-              }}
-              style={{ 
-                background: '#ff6b6b', 
-                color: 'white', 
-                border: 'none', 
-                padding: '4px 8px', 
-                borderRadius: '4px',
-                fontSize: '12px',
-                cursor: 'pointer'
-              }}
-            >
-              Test Fetch
-            </button>
-          )}
+
         </div>
         
-        {/* Debug info - remove after testing */}
-        {process.env.NODE_ENV === 'development' && (
-          <div style={{ padding: '8px', fontSize: '12px', color: '#666', background: '#f0f0f0', margin: '8px' }}>
-            Debug: {friends.length} friends found for user {userId}
-          </div>
-        )}
+
         
         {friends.length === 0 ? (
           <div className={styles.emptyState}>
