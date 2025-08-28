@@ -37,7 +37,7 @@
   grid-template-columns: 360px 1fr;
   gap: 16px;
   align-items: start;
-  padding: 0 16px;
+  padding: 20px 16px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -46,10 +46,12 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-left: 50px;
 }
 
 .rightColumn {
-  min-width: 0; /* Prevents flex items from overflowing */
+  min-width: 0; 
+  margin: 0px auto;/* Prevents flex items from overflowing */
 }
 
 /* Mobile Layout Styles */
@@ -82,7 +84,7 @@
   .twoColumnLayout {
     grid-template-columns: 320px 1fr;
     gap: 12px;
-    padding: 0 12px;
+    padding: 20px 12px;
   }
 }
 

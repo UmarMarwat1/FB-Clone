@@ -123,3 +123,65 @@
 .unread .notificationMessage {
   color: #1c1e21;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .notificationItem {
+    padding: 16px;
+    min-height: 60px; /* Touch-friendly height */
+  }
+  
+  .notificationIcon {
+    font-size: 24px;
+    margin-right: 16px;
+    width: 28px;
+  }
+  
+  .notificationTitle {
+    font-size: 15px;
+  }
+  
+  .notificationMessage {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .notificationTime {
+    font-size: 13px;
+  }
+  
+  .senderName {
+    font-size: 13px;
+  }
+  
+  .unreadIndicator {
+    top: 20px;
+    right: 20px;
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notificationItem {
+    padding: 14px 12px;
+  }
+  
+  .notificationIcon {
+    font-size: 22px;
+    margin-right: 14px;
+    width: 26px;
+  }
+  
+  .notificationTitle {
+    font-size: 14px;
+  }
+  
+  .notificationMessage {
+    font-size: 13px;
+  }
+  
+  .notificationTime {
+    font-size: 12px;
+  }
+}

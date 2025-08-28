@@ -1732,6 +1732,126 @@
   cursor: not-allowed;
 }
 
+/* Mobile Responsive for Friend Card */
+@media (max-width: 610px) {
+  .friendCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .friendInfo {
+    width: 100%;
+    gap: 14px;
+  }
+
+  .friendAvatar {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+  }
+
+  .friendDetails h3 {
+    font-size: 17px;
+  }
+
+  .friendDetails p {
+    font-size: 14px;
+  }
+
+  .friendActions {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .messageBtn,
+  .removeFriendBtn {
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 15px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 479px) {
+  .friendCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 16px;
+  }
+
+  .friendInfo {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .friendAvatar {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .friendDetails h3 {
+    font-size: 16px;
+  }
+
+  .friendDetails p {
+    font-size: 13px;
+  }
+
+  .friendActions {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .messageBtn,
+  .removeFriendBtn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 320px) {
+  .friendCard {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .friendInfo {
+    gap: 10px;
+  }
+
+  .friendAvatar {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+
+  .friendDetails h3 {
+    font-size: 15px;
+  }
+
+  .friendDetails p {
+    font-size: 12px;
+  }
+
+  .friendActions {
+    gap: 6px;
+  }
+
+  .messageBtn,
+  .removeFriendBtn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
 /* Connection Status */
 .connectionStatus {
   position: fixed;
@@ -2695,6 +2815,7 @@
   border-radius: 2px;
   outline: none;
   cursor: pointer;
+  appearance: none;
   -webkit-appearance: none;
 }
 

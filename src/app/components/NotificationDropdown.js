@@ -88,6 +88,14 @@ export default function NotificationDropdown({ onClose }) {
               Mark all read
             </button>
           )}
+          {/* Mobile close button */}
+          <button 
+            className={styles.mobileCloseButton}
+            onClick={onClose}
+            title="Close notifications"
+          >
+            ✕
+          </button>
         </div>
       </div>
       

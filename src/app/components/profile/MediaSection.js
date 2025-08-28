@@ -15,6 +15,37 @@ export default function MediaSection({ userId, isOwner, compact = false, mobile 
     fetchMediaData();
   }, [userId]);
 
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (selectedMedia) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to restore scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedMedia]);
+
+  // Handle keyboard events for modal
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && selectedMedia) {
+        closeMediaViewer();
+      }
+    };
+
+    if (selectedMedia) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedMedia]);
+
   const fetchMediaData = async () => {
     try {
       setLoading(true);
@@ -240,10 +271,6 @@ export default function MediaSection({ userId, isOwner, compact = false, mobile 
                 className={styles.viewerMedia}
               />
             )}
-            <div className={styles.viewerInfo}>
-              {selectedMedia.title && <h3>{selectedMedia.title}</h3>}
-              <p>{new Date(selectedMedia.created_at).toLocaleDateString()}</p>
-            </div>
           </div>
         </div>
       )}

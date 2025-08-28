@@ -355,25 +355,6 @@ export default function UserPostsSection({ userId, isOwner, currentUser }) {
 
       {/* Posts Container */}
       <div className={styles.postsContainer}>
-        {/* Posts Header */}
-        <div className={styles.postsHeader}>
-          <h2>Posts</h2>
-          <div className={styles.postsHeaderActions}>
-            <div className={styles.postsViewToggle}>
-              <button className={styles.active}>List view</button>
-              <button>Grid view</button>
-            </div>
-            <button className={styles.postsHeaderAction}>
-              <span>🔧</span>
-              Filters
-            </button>
-            <button className={styles.postsHeaderAction}>
-              <span>⚙️</span>
-              Manage posts
-            </button>
-          </div>
-        </div>
-        
         {/* Posts List */}
         {posts.length === 0 ? (
           <div className={styles.emptyContainer}>

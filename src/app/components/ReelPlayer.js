@@ -462,253 +462,259 @@ export default function ReelPlayer({
 
   return (
     <div className={styles.reelPlayer}>
-      {/* Top-right video controls */}
-      <div className={styles.videoControls}>
-        <button className={styles.controlButton} onClick={togglePlay}>
-          {isPlaying ? (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          )}
-        </button>
-        
-        <button className={styles.controlButton} onClick={() => {
-          if (videoRef.current) {
-            videoRef.current.muted = !videoRef.current.muted;
-          }
-        }}>
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-          </svg>
-        </button>
-        
-        <div className={styles.dropdownMenu}>
-          <button className={styles.controlButton}>
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
-          </button>
-          <div className={styles.dropdownContent}>
-            <button className={styles.dropdownItem} onClick={handleSave}>
-              {isSaved ? (
-                <>
+      <div className={styles.videoContainer}>
+        <div className={styles.videoWrapper}>
+          {/* Top-right video controls */}
+          <div className={styles.videoControls}>
+          <button className={styles.controlButton} onClick={togglePlay}>
+            {isPlaying ? (
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-              </svg>
-                  Unsave video
-                </>
-              ) : (
-                <>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-                  </svg>
-                  Save video
-                </>
-              )}
-            </button>
-            
-            {/* Show delete button only to reel owner */}
-            {currentUser && reel.user_id === currentUser.id && (
-              <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDeleteReel}>
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-                Delete reel
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {reel.video_url && isValidVideoUrl(reel.video_url) && !videoError ? (
-        <video
-          ref={videoRef}
-          className={styles.reelVideo}
-          src={reel.video_url}
-          poster={reel.thumbnail_url || ''}
-          loop
-          muted={!isActive}
-          playsInline
-          onLoadedMetadata={handleLoadedMetadata}
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={handleEnded}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onError={handleError}
-          onLoadStart={() => {
-            console.log('Video loading started:', reel.video_url)
-            setVideoError(null) // Clear any previous errors
-          }}
-          onCanPlay={() => {
-            console.log('Video can play:', reel.video_url)
-            setVideoError(null) // Clear any previous errors
-          }}
-          onCanPlayThrough={() => console.log('Video can play through:', reel.video_url)}
-          style={{ pointerEvents: 'none' }}
-        />
-      ) : (
-        <div className={styles.videoError}>
-          {videoError ? (
-            <>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-              <h3 style={{ margin: '0 0 8px 0', color: '#e74c3c' }}>Video Error</h3>
-              <p style={{ margin: '0 0 16px 0', color: '#666' }}>{videoError}</p>
-              <div style={{ 
-                background: '#f8f9fa', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                marginBottom: '16px',
-                fontSize: '12px',
-                color: '#666'
-              }}>
-                <strong>Supported formats:</strong> MP4, WebM, OGG
-                <br />
-                <strong>Recommended:</strong> MP4 (H.264) for best compatibility
-              </div>
-              <button 
-                onClick={() => {
-                  setVideoError(null)
-                  if (videoRef.current) {
-                    videoRef.current.load() // Try to reload the video
-                  }
-                }}
-                style={{
-                  background: '#1da1f2',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                Try Again
-              </button>
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎬</div>
-          <p>{!reel.video_url ? 'Video not available' : 'Invalid video URL'}</p>
-          {reel.video_url && (
-            <p style={{ fontSize: '12px', marginTop: '8px', opacity: 0.7 }}>
-              URL: {reel.video_url}
-            </p>
-          )}
-            </>
-          )}
-        </div>
-      )}
-      
-      {/* Bottom user info overlay */}
-      <div className={styles.bottomInfo}>
-        <div className={styles.userInfo}>
-          <img 
-            src={reel.profiles?.avatar_url || '/default-avatar.svg'} 
-            alt={reel.profiles?.username || 'User'} 
-            className={styles.userAvatar}
-            onClick={() => navigateToProfile(reel.profiles?.username)}
-          />
-          <div className={styles.userDetails}>
-            <div className={styles.userHeader}>
-              <span 
-                className={styles.username}
-                onClick={() => navigateToProfile(reel.profiles?.username)}
-              >
-                {reel.profiles?.username || reel.profiles?.full_name || 'Unknown User'}
-              </span>
-              {reel.profiles?.verified && (
-                <span className={styles.verifiedBadge}>✓</span>
-              )}
-            </div>
-            <button 
-              className={`${styles.followButton} ${isFollowing ? styles.following : ''}`}
-              onClick={() => handleFollow(reel.profiles?.id)}
-            >
-              {isFollowing ? 'Following' : 'Follow'}
-            </button>
-          </div>
-        </div>
-        
-        <div className={styles.captionSection}>
-          <p className={styles.caption}>{reel.caption || 'No caption'}</p>
-          {reel.hashtags && (
-            <div className={styles.hashtags}>
-              {reel.hashtags.split(' ').map((tag, index) => (
-                <span key={index} className={styles.hashtag}>{tag}</span>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        <div className={styles.audioInfo}>
-          <svg viewBox="0 0 24 24" fill="currentColor" className={styles.audioIcon}>
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-          </svg>
-          <span className={styles.audioSource}>
-            {reel.profiles?.username || 'Unknown'} · Original audio
-          </span>
-        </div>
-      </div>
-      
-      {/* Right-side actions */}
-      <div className={styles.rightActions}>
-        <button className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`} onClick={handleLike}>
-          <div className={styles.actionIcon}>
-            <svg viewBox="0 0 24 24" fill={isLiked ? 'red' : 'currentColor'} width="20" height="20">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </div>
-          <span className={styles.actionCount}>{reel.like_count || 0}</span>
-        </button>
-        
-        <button className={styles.actionButton} onClick={handleComment}>
-          <div className={styles.actionIcon}>
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path d="M21.99 4c0-1.1-.89-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
-            </svg>
-          </div>
-          <span className={styles.actionCount}>{reel.comment_count || 0}</span>
-        </button>
-        
-        <button className={styles.actionButton} onClick={handleShare}>
-          <div className={styles.actionIcon}>
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
-            </svg>
-          </div>
-          <span className={styles.actionCount}>{reel.share_count || 0}</span>
-        </button>
-        
-        <button className={`${styles.actionButton} ${isSaved ? styles.saved : ''}`} onClick={handleSave}>
-          <div className={styles.actionIcon}>
-            {isSaved ? (
-              // Bookmark filled (saved)
-              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7 3V5c0-1.1-.9-2-2-2z"/>
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
               </svg>
             ) : (
-              // Bookmark outline (not saved)
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7 3V5c0-1.1-.9-2-2-2z"/>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
               </svg>
             )}
+          </button>
+          
+          <button className={styles.controlButton} onClick={() => {
+            if (videoRef.current) {
+              videoRef.current.muted = !videoRef.current.muted;
+            }
+          }}>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          </button>
+          
+          <div className={styles.dropdownMenu}>
+            <button className={styles.controlButton}>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
+            </button>
+            <div className={styles.dropdownContent}>
+              <button className={styles.dropdownItem} onClick={handleSave}>
+                {isSaved ? (
+                  <>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+                    Unsave video
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    Save video
+                  </>
+                )}
+              </button>
+              
+              {/* Show delete button only to reel owner */}
+              {currentUser && reel.user_id === currentUser.id && (
+                <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDeleteReel}>
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                  </svg>
+                  Delete reel
+                </button>
+              )}
+            </div>
           </div>
-          <span className={styles.actionCount}>
-            {isSaved ? 'Saved' : 'Save'}
-          </span>
-        </button>
-        
-        <div className={styles.actionButton}>
-          <div className={styles.actionIcon}>
-            <img 
-              src={reel.profiles?.avatar_url || '/default-avatar.svg'} 
-              alt="Profile" 
-              style={{ width: '20px', height: '20px', borderRadius: '50%' }}
+        </div>
+
+        {reel.video_url && isValidVideoUrl(reel.video_url) && !videoError ? (
+          <>
+            <video
+              ref={videoRef}
+              className={styles.reelVideo}
+              src={reel.video_url}
+              poster={reel.thumbnail_url || ''}
+              loop
+              muted={!isActive}
+              playsInline
+              onLoadedMetadata={handleLoadedMetadata}
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={handleEnded}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onError={handleError}
+              onLoadStart={() => {
+                console.log('Video loading started:', reel.video_url)
+                setVideoError(null) // Clear any previous errors
+              }}
+              onCanPlay={() => {
+                console.log('Video can play:', reel.video_url)
+                setVideoError(null) // Clear any previous errors
+              }}
+              onCanPlayThrough={() => console.log('Video can play through:', reel.video_url)}
+              style={{ pointerEvents: 'none' }}
             />
+            
+            {/* Bottom user info overlay */}
+            <div className={styles.bottomInfo}>
+            <div className={styles.userInfo}>
+              <img 
+                src={reel.profiles?.avatar_url || '/default-avatar.svg'} 
+                alt={reel.profiles?.username || 'User'} 
+                className={styles.userAvatar}
+                onClick={() => navigateToProfile(reel.profiles?.username)}
+              />
+              <div className={styles.userDetails}>
+                <div className={styles.userHeader}>
+                  <span 
+                    className={styles.username}
+                    onClick={() => navigateToProfile(reel.profiles?.username)}
+                  >
+                    {reel.profiles?.username || reel.profiles?.full_name || 'Unknown User'}
+                  </span>
+                  {reel.profiles?.verified && (
+                    <span className={styles.verifiedBadge}>✓</span>
+                  )}
+                </div>
+                <button 
+                  className={`${styles.followButton} ${isFollowing ? styles.following : ''}`}
+                  onClick={() => handleFollow(reel.profiles?.id)}
+                >
+                  {isFollowing ? 'Following' : 'Follow'}
+                </button>
+              </div>
+            </div>
+            
+            <div className={styles.captionSection}>
+              <p className={styles.caption}>{reel.caption || 'No caption'}</p>
+              {reel.hashtags && (
+                <div className={styles.hashtags}>
+                  {reel.hashtags.split(' ').map((tag, index) => (
+                    <span key={index} className={styles.hashtag}>{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.audioInfo}>
+              <svg viewBox="0 0 24 24" fill="currentColor" className={styles.audioIcon}>
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+              </svg>
+              <span className={styles.audioSource}>
+                {reel.profiles?.username || 'Unknown'} · Original audio
+              </span>
+            </div>
           </div>
+          
+          {/* Right-side actions */}
+          <div className={styles.rightActions}>
+            <button className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`} onClick={handleLike}>
+              <div className={styles.actionIcon}>
+                <svg viewBox="0 0 24 24" fill={isLiked ? 'red' : 'currentColor'} width="20" height="20">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <span className={styles.actionCount}>{reel.like_count || 0}</span>
+            </button>
+            
+            <button className={styles.actionButton} onClick={handleComment}>
+              <div className={styles.actionIcon}>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M21.99 4c0-1.1-.89-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+                </svg>
+              </div>
+              <span className={styles.actionCount}>{reel.comment_count || 0}</span>
+            </button>
+            
+            <button className={styles.actionButton} onClick={handleShare}>
+              <div className={styles.actionIcon}>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </div>
+              <span className={styles.actionCount}>{reel.share_count || 0}</span>
+            </button>
+            
+            <button className={`${styles.actionButton} ${isSaved ? styles.saved : ''}`} onClick={handleSave}>
+              <div className={styles.actionIcon}>
+                {isSaved ? (
+                  // Bookmark filled (saved)
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7 3V5c0-1.1-.9-2-2-2z"/>
+                  </svg>
+                ) : (
+                  // Bookmark outline (not saved)
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7 3V5c0-1.1-.9-2-2-2z"/>
+                  </svg>
+                )}
+              </div>
+              <span className={styles.actionCount}>
+                {isSaved ? 'Saved' : 'Save'}
+              </span>
+            </button>
+            
+            <div className={styles.actionButton}>
+              <div className={styles.actionIcon}>
+                <img 
+                  src={reel.profiles?.avatar_url || '/default-avatar.svg'} 
+                  alt="Profile" 
+                  style={{ width: '20px', height: '20px', borderRadius: '50%' }}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+        ) : (
+          <div className={styles.videoError}>
+            {videoError ? (
+              <>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+                <h3 style={{ margin: '0 0 8px 0', color: '#e74c3c' }}>Video Error</h3>
+                <p style={{ margin: '0 0 16px 0', color: '#666' }}>{videoError}</p>
+                <div style={{ 
+                  background: '#f8f9fa', 
+                  padding: '12px', 
+                  borderRadius: '6px', 
+                  marginBottom: '16px',
+                  fontSize: '12px',
+                  color: '#666'
+                }}>
+                  <strong>Supported formats:</strong> MP4, WebM, OGG
+                  <br />
+                  <strong>Recommended:</strong> MP4 (H.264) for best compatibility
+                </div>
+                <button 
+                  onClick={() => {
+                    setVideoError(null)
+                    if (videoRef.current) {
+                      videoRef.current.load() // Try to reload the video
+                    }
+                  }}
+                  style={{
+                    background: '#1da1f2',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Try Again
+                </button>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎬</div>
+            <p>{!reel.video_url ? 'Video not available' : 'Invalid video URL'}</p>
+            {reel.video_url && (
+              <p style={{ fontSize: '12px', marginTop: '8px', opacity: 0.7 }}>
+                URL: {reel.video_url}
+              </p>
+            )}
+              </>
+            )}
+          </div>
+        )}
         </div>
       </div>
     </div>

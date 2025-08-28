@@ -164,7 +164,7 @@ export default function ReelUpload({ currentUser, onUploadComplete }) {
               </svg>
             </div>
             <h3>Select Video</h3>
-            <p>Choose a video file (max 30 seconds, 100MB)</p>
+            <p>Choose a video file (max 30 seconds, 4.5MB)</p>
             <button 
               type="button" 
               className={styles.selectButton}

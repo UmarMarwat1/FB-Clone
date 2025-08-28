@@ -8,12 +8,21 @@ import { useComments } from "../context/CommentsContext"
 export default function ChatbotWrapper() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
   const { commentsOpen } = useComments()
   const userRef = useRef(null)
 
   useEffect(() => {
     getUser()
+    
+    // Check if device is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
     
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -27,7 +36,10 @@ export default function ChatbotWrapper() {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function getUser() {
@@ -50,6 +62,12 @@ export default function ChatbotWrapper() {
 
   // Only show chatbot if user is logged in
   if (!user) return null
+
+  // Hide AI Chat button on mobile screens when on reels page
+  if (isMobile && pathname.startsWith('/reels')) return null
+
+  // Hide AI Chat button completely from Messages page
+  if (pathname.startsWith('/messages')) return null
 
   return <Chatbot user={user} commentsOpen={commentsOpen} />
 }
